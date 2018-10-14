@@ -1,0 +1,152 @@
+---
+title: "Earthquake_Capstone_Report"
+author: "H. Ewton"
+date: "9/28/2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Sources
+
+Two data sets were used in this analysis. The first data set, signif_earthquakes, was obtained from NOAA's Significant Earthquakes Database ( <https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1>) and lists every recorded earthquake in history back to 2150 BC. The other data set used, USGS_df, was obtained from Kaggle (<https://www.kaggle.com/usgs/earthquake-database#database.csv>) and lists all recorded major earthquakes in the USGS data base from 1965 to 2016. 
+
+## signif_earthquakes clean-up
+This file, signif_earthquakes, presented several challenges. The file first needed to be reduced to only include relevant variables from the original original data set; these relevant columsn included date information, time, magnitude, and location information. Next, the data needed to be filtered to include observations that included reliable magnitude measurements. The chosen measurement scale for this analysis is the Richter scale as it has been shown to be reliable and provides substantial amounts of data; therefore, all data prior to the creation and regular use of the Richter scale (1935) was removed. Earthquakes that were documented without a measurement were also filtered and removed from the table. These processes left us with the table below:   
+
+
+```{r, echo = FALSE, include = FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+
+#Import data from NOAA on significant earthquakes in recorded geologic history
+signif_earthquakes <- read_delim("C:/Users/heath/Desktop/signif (3).txt", 
+                        "\t", escape_double = FALSE, trim_ws = TRUE)
+
+#Save as data frame
+signif_earthquakes <- as.data.frame(signif_earthquakes, stringsAsFactors = FALSE)
+
+#Select relevant headings
+signif_earthquakes <- select(signif_earthquakes, "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "FOCAL_DEPTH", "EQ_MAG_UNK", "COUNTRY", "LOCATION_NAME", "LATITUDE", "LONGITUDE")
+
+#Change headings to lowercase
+signif_earthquakes <- setNames(signif_earthquakes, tolower(names(signif_earthquakes)))
+
+#Select data from 1935 to present
+signif_earthquakes <- filter(signif_earthquakes, year > 1934)
+
+#Remove any magnitude values that are NA (indicates a recorded earthquake with no measurement)
+signif_earthquakes$eq_mag_unk[is.na(signif_earthquakes$eq_mag_unk)] <- 0
+signif_earthquakes <- filter(signif_earthquakes, eq_mag_unk > 0)
+```
+
+```{r, echo = TRUE}
+head(signif_earthquakes)
+```
+
+  
+## USGS_df Clean-up
+
+The next step in the cleaning of data was to address the USGS data set from Kaggle. Like signif_earthquakes, the columns relevant to this analysis first had to be extracted. From USGS_df, selected columns were "Date", "Time", "Latitude", "Longitude", "Depth", and "Magnitude". The selection of these columns allows us to complete our data analysis as well as join the columns together.  After selecting the relevant columns, the date column was reformatted to international date format and the "depth" column was renamed to "focal_depth" to better indicate what the values represent. The cleaned table for USGS_df appears below:
+
+```{r, echo = FALSE, include = FALSE}
+#Import data from USGS on earthquakes larger than 5.5 (as measured on the Richter Scale) from 1965-2016
+USGS_earthquakes <- read_csv("C:/Users/heath/Desktop/database.csv")
+
+#Save USGS data set as a data frame (from csv)
+USGS_df <- as.data.frame(USGS_earthquakes)
+
+#Select relevant headings
+USGS_df <- select(USGS_df, "Date", "Time", "Latitude", "Longitude", "Depth", "Magnitude")
+
+#Set column headings to lowercase
+USGS_df <- setNames(USGS_df, tolower(names(USGS_df)))
+
+#Format date to YYYY-MM-DD
+USGS_df$date <- format(as.Date(USGS_df$date, "%m/%d/%Y"), "%Y-%m-%d")
+
+#Rename depth as "focal_depth"
+colnames(USGS_df)[5] <- "focal_depth"
+```
+
+
+```{r}
+#Print head(USGS_df)
+head(USGS_df)
+```
+
+## Joining the data frames   
+
+To best join the data frames together without losing data, a full_join function was used. However, for the full_join function to work best, the data from signif_earthquakes needed to be slighly altered to match the format found in USGS_df. This alteration was done by assigning a zero value to time measurements, then by combining hours, minutes, and seconds into one column marked "time" in hh:mm:ss format. This zero value was assigned as some earthuakes were measured in hh:mm and some in hh:mm:ss.   
+
+Another set of columns that needed to be combined in the signif_earthquakes data frame were the date columns (month, day, year). These were united into one column labelled "date" and put into international date format YYYY-MM-DD. These changes led to the new format of the signif_earthquake data frame:  
+
+```{r, echo = FALSE, include = FALSE}
+#Replace NA with zero value in hour, minute, second columns
+signif_earthquakes$hour[is.na(signif_earthquakes$hour)] <- 0
+signif_earthquakes$minute[is.na(signif_earthquakes$minute)] <- 0
+signif_earthquakes$second[is.na(signif_earthquakes$second)] <- 0
+
+#Create date column by joining Year, Month, Day 
+signif_earthquakes <- unite(signif_earthquakes, date, c("year", "month", "day"), sep = "-")
+
+#Create Time Column by joining Hour, Minute, Second
+signif_earthquakes <- unite(signif_earthquakes, time, c("hour", "minute", "second"), sep = ":")
+signif_earthquakes$time <- hms::as.hms(signif_earthquakes$time)
+
+#Rename eq_mag_unk column as magnitude
+colnames(signif_earthquakes)[4] <- "magnitude"
+
+head(signif_earthquakes)
+```
+
+Once the two tables were in the correct formats, full_join was used to consolidate the data into one data frame: 
+
+```{r}
+#Join tables together via date, time, latitude, and longitude
+earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time", "latitude", "longitude", "magnitude", "focal_depth"))
+
+summary(earthquakes)
+```
+
+However, one more data set was needed to complete the analysis. Stored as  JSON file, this data set contained the plate bounddaries of each plate by connecting a series of coordinates. This file was uploaded and read using the geojsonio package. Once loaded, the earthquakes data set was overlaid onto the plate boundaries data set. 
+
+```{r}
+library(sp)
+library(geojsonio)
+
+# Import data for tectonic plate boundaries
+plate_data <- "PB2002_plates.json"
+plates <- geojson_read(plate_data, what = "sp")  
+
+
+# convert list of earthquake points into a SpatialPointsDataFrame
+coordinates(earthquakes) <- ~ longitude + latitude
+
+# convert earthquakes to use the same coordinate system as plates (needed for overlay)
+proj4string(earthquakes) <- proj4string(plates)
+
+# Create overlay
+earthquakes_plates <- over(earthquakes, plates)
+```
+
+The final step in tidying the data was to combine the columns from the two resulting tables and save the new result as a data frame. This gives us the following result: 
+
+```{r}
+# Attach the resulting columns that we got from over to the rows of eqs
+earthquakes$LAYER <- earthquakes_plates$LAYER
+earthquakes$Code <- earthquakes_plates$Code
+earthquakes$PlateName <- earthquakes_plates$PlateName
+
+earthquakes <- as.data.frame(earthquakes)
+
+
+head(earthquakes)
+```
