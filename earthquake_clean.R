@@ -75,9 +75,6 @@ earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time", "la
 
 summary(earthquakes)
 
-
-
-
 # Import data for tectonic plate boundaries
 plate_data <- "PB2002_plates.json"
 plates <- geojson_read(plate_data, what = "sp")  #SpatialPointsDataFrame
