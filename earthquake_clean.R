@@ -161,16 +161,23 @@ decade_map <- world +
 
 plot(decade_map)
 
+#Filter for Pacific plate earthquakes
+pacific_earthquakes <- filter(earthquakes, PlateName == "Pacific")
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(pacific_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year")
+
+#Scatterplot of year vs magnitude on Pacific plate
+ggplot(pacific_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_point() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on Pacific plate")
 
 #Unite month, day, year columns
 earthquakes <- unite(earthquakes, quake_date, c("year", "month", "day"), sep = "-")
-
-#Create scatterplot of Magnitude vs Date
-ggplot(earthquakes, aes(x = magnitude, y = quake_date)) +
-  geom_jitter() +
-  facet_grid(.~ PlateName)+
-  ggtitle("Magnitude vs. Date")
-
 
 #Animate progression of earthquakes
 ghost_points_ini <- tibble(
