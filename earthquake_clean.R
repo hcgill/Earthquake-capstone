@@ -184,13 +184,13 @@ ghost_points_fin <- tibble(
   magnitude = 0, longitude = 0, latitude = 0)
 
 animated_map <- world +
-  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName), data = earthquakes, alpha = .5) +
   geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
-  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, # this is the init transparent frame
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = earthquakes, alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
                  frame = quake_date,
                  cumulative = FALSE),
              data = ghost_points_ini, alpha = 0) +
-  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, # this is the final transparent frames
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
                  frame = quake_date,
                  cumulative = FALSE),
              data = ghost_points_fin, alpha = 0) +
