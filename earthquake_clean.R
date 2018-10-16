@@ -170,14 +170,14 @@ ggplot(pacific_earthquakes, aes(factor(year))) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
   ggtitle("Number of Major Earthquakes per Year")
 
-#Scatterplot of year vs magnitude on Pacific plate
+#Boxplot of year vs magnitude on Pacific plate
 ggplot(pacific_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
   ggtitle("Year vs Magnitude of earthquakes on Pacific plate")
 
 #Unite month, day, year columns
-earthquakes <- unite(earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+pacific_earthquakes <- unite(pacific_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
 
 #Animate progression of earthquakes
 ghost_points_ini <- tibble(
@@ -192,7 +192,7 @@ ghost_points_fin <- tibble(
 
 animated_map <- world +
   geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
-  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = pacific_earthquakes, alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(pacific_earthquakes), alpha = .5) +
   geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
                  frame = quake_date,
                  cumulative = FALSE),
