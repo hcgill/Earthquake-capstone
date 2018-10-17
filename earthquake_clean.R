@@ -124,6 +124,12 @@ ggplot(earthquakes, aes(x = PlateName, y = magnitude)) +
   ggtitle("Outliers in magnitude on tectonic plates")
 
 
+#Boxplot of Year vs. Magnitude
+ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs. Magnitude")
+
 
 #Map Earthquake locations by magnitude (colored per tectonic plate location)
 world <- ggplot() +
