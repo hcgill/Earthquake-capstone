@@ -179,7 +179,7 @@ ggplot(pacific_earthquakes, aes(x = year, y = magnitude)) +
 #Unite month, day, year columns
 pacific_earthquakes <- unite(pacific_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
 
-#Animate progression of earthquakes
+#Animate progression of earthquakes for Pacific Plate
 ghost_points_ini <- tibble(
   quake_date = as.Date('1965-01-01'),
   magnitude = 0, longitude = 0, latitude = 0)
@@ -206,3 +206,205 @@ animated_map <- world +
   theme(legend.position = "right")
 
 gganimate::gg_animate(animated_map)
+
+
+
+#Filter for North American plate earthquakes
+na_earthquakes <- filter(earthquakes, PlateName == "North America")
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(na_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year on North American plate")
+
+#Boxplot of year vs magnitude on Pacific plate
+ggplot(na_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on North American plate")
+
+#Unite month, day, year columns
+na_earthquakes <- unite(na_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+#Animate progression of earthquakes for Pacific Plate
+ghost_points_ini <- tibble(
+  quake_date = as.Date('1965-01-01'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+ghost_points_fin <- tibble(
+  quake_date = seq(as.Date('2017-01-01'),
+                   as.Date('2017-01-02'),
+                   by = 'days'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+na_animated_map <- world +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(na_earthquakes, n = 100L), alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_ini, alpha = 0) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_fin, alpha = 0) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+gganimate::gg_animate(na_animated_map)
+
+
+
+#Filter for South American plate earthquakes
+sa_earthquakes <- filter(earthquakes, PlateName == c("South America", "Nazca"))
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(sa_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year on South American plate")
+
+#Boxplot of year vs magnitude on South American and Nazca plates
+ggplot(sa_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on South American and Nazca plates")
+
+#Unite month, day, year columns
+sa_earthquakes <- unite(sa_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+#Animate progression of earthquakes for South American and Nazca Plates
+ghost_points_ini <- tibble(
+  quake_date = as.Date('1965-01-01'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+ghost_points_fin <- tibble(
+  quake_date = seq(as.Date('2017-01-01'),
+                   as.Date('2017-01-02'),
+                   by = 'days'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+sa_animated_map <- world +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(sa_earthquakes, n = 100L), alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_ini, alpha = 0) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_fin, alpha = 0) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+gganimate::gg_animate(sa_animated_map)
+
+
+
+
+
+
+#Filter for Eurasian plate earthquakes
+eua_earthquakes <- filter(earthquakes, PlateName == "Eurasia")
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(eua_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year on Eurasian plate")
+
+#Boxplot of year vs magnitude on Pacific plate
+ggplot(eua_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on Eurasian plate")
+
+#Unite month, day, year columns
+eua_earthquakes <- unite(eua_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+#Animate progression of earthquakes for Pacific Plate
+ghost_points_ini <- tibble(
+  quake_date = as.Date('1965-01-01'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+ghost_points_fin <- tibble(
+  quake_date = seq(as.Date('2017-01-01'),
+                   as.Date('2017-01-02'),
+                   by = 'days'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+eua_animated_map <- world +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(eua_earthquakes, n = 100L), alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_ini, alpha = 0) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_fin, alpha = 0) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+gganimate::gg_animate(eua_animated_map)
+
+
+
+
+
+
+#Filter for North American and Pacific plate earthquakes
+nap_earthquakes <- filter(earthquakes, PlateName == c("North America", "Pacific"))
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(nap_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year on North American and Pacific plates")
+
+#Boxplot of year vs magnitude on Pacific plate
+ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on North American and Pacific plates")
+
+#Unite month, day, year columns
+nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+#Animate progression of earthquakes for Pacific Plate
+ghost_points_ini <- tibble(
+  quake_date = as.Date('1965-01-01'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+ghost_points_fin <- tibble(
+  quake_date = seq(as.Date('2017-01-01'),
+                   as.Date('2017-01-02'),
+                   by = 'days'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+nap_animated_map <- world +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(nap_earthquakes, n = 100L), alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_ini, alpha = 0) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_fin, alpha = 0) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+gganimate::gg_animate(nap_animated_map)
+
+
+
+
