@@ -101,6 +101,8 @@ earthquakes <- as.data.frame(earthquakes)
 
 head(earthquakes, n = 50L)
 
+
+
 #separate date column into year, month, and day
 earthquakes <- separate(earthquakes, date, into = c("year", "month", "day"))
 
@@ -108,6 +110,8 @@ earthquakes <- separate(earthquakes, date, into = c("year", "month", "day"))
 earthquakes <- filter(earthquakes, year < 2017)
 earthquakes <- filter(earthquakes, magnitude > 5.5)
 
+
+##Graph Exploration and Analysis of Data
 
 
 #Bar graph of year vs # of major earthquakes (1965-2016)
@@ -411,6 +415,43 @@ nap_animated_map <- world +
 
 gganimate::gg_animate(nap_animated_map)
 
+
+##Interactions between variables
+
+intModel1 = lm(latitude ~ PlateName + Depth, data = earthquakes)
+summary(intMOdel1)
+plot(intModel1)
+
+intModel2 = lm(latitude ~ PlateName * Depth, data = earthquakes)
+summary(intModel2)
+plot(intModel2)
+
+intModel3 = lm(longitude ~ PlateName + Depth, data = earthquakes)
+summary(intModel3)
+plot(intModel3)
+
+intModel4 = lm(longitude ~ PlateName * Depth, data = earthquakes)
+summary(intModel4)
+plot(intModel4)
+
+intModel5 = lm(magnitude ~ Lat + Long + Plate + Depth, data = earthquakes)
+summary(intModel5)
+plot(intModel5)
+
+intModel6 = lm(magnitude ~ Late * Long + Plate + Depth, data = earthquakes)
+summary(intModel6)
+plot(intModel6)
+
+intModel7 = lm(magnitude ~ Lat * Long + Plate * Depth, data = earthquakes)
+summary(intModel7)
+plot(intModel7)
+
+intModel8 = lm(magnitude ~ Lat * Long * Plate * Depth, data = earthquakes)
+summary(intModel8)
+plot(intModel8)
+
+
+#logistic regression for probability of a major earthquake
 
 
 
