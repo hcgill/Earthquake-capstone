@@ -430,16 +430,16 @@ plot(longitude ~ PlateName + focal_depth, data = earthquakes)
 plot(longitude ~ PlateName * focal_depth, data = earthquakes)
 
 
-plot(magnitude ~ Lat + Long + Plate + Depth, data = earthquakes)
+plot(magnitude ~ latitude + longitude + PlateName + focal_depth, data = earthquakes)
 
 
-plot(magnitude ~ Late * Long + Plate + Depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName + focal_depth, data = earthquakes)
 
 
-plot(magnitude ~ Lat * Long + Plate * Depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName * focal_depth, data = earthquakes)
 
 
-plot(magnitude ~ Lat * Long * Plate * Depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude * PlateName * focal_depth, data = earthquakes)
 
 
 
