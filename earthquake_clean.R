@@ -418,40 +418,31 @@ gganimate::gg_animate(nap_animated_map)
 
 ##Interactions between variables
 
-intModel1 = lm(latitude ~ PlateName + Depth, data = earthquakes)
-summary(intMOdel1)
-plot(intModel1)
-
-intModel2 = lm(latitude ~ PlateName * Depth, data = earthquakes)
-summary(intModel2)
-plot(intModel2)
-
-intModel3 = lm(longitude ~ PlateName + Depth, data = earthquakes)
-summary(intModel3)
-plot(intModel3)
-
-intModel4 = lm(longitude ~ PlateName * Depth, data = earthquakes)
-summary(intModel4)
-plot(intModel4)
-
-intModel5 = lm(magnitude ~ Lat + Long + Plate + Depth, data = earthquakes)
-summary(intModel5)
-plot(intModel5)
-
-intModel6 = lm(magnitude ~ Late * Long + Plate + Depth, data = earthquakes)
-summary(intModel6)
-plot(intModel6)
-
-intModel7 = lm(magnitude ~ Lat * Long + Plate * Depth, data = earthquakes)
-summary(intModel7)
-plot(intModel7)
-
-intModel8 = lm(magnitude ~ Lat * Long * Plate * Depth, data = earthquakes)
-summary(intModel8)
-plot(intModel8)
+plot(latitude ~ PlateName + focal_depth, data = earthquakes)
 
 
-#logistic regression for probability of a major earthquake
+plot(latitude ~ PlateName * focal_depth, data = earthquakes)
+
+
+plot(longitude ~ PlateName + focal_depth, data = earthquakes)
+
+
+plot(longitude ~ PlateName * focal_depth, data = earthquakes)
+
+
+plot(magnitude ~ Lat + Long + Plate + Depth, data = earthquakes)
+
+
+plot(magnitude ~ Late * Long + Plate + Depth, data = earthquakes)
+
+
+plot(magnitude ~ Lat * Long + Plate * Depth, data = earthquakes)
+
+
+plot(magnitude ~ Lat * Long * Plate * Depth, data = earthquakes)
+
+
+
 
 
 
