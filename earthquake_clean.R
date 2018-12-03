@@ -416,65 +416,77 @@ nap_animated_map <- world +
 
 gganimate::gg_animate(nap_animated_map)
 
+##Checking for skew of variables
+
+
+hist(earthquakes$focal_depth)
+hist(log1p(earthquakes$focal_depth))
+
+
+ggplot(earthquakes1, aes(x=magnitude)) + geom_density()
+
+ggplot(earthquakes1, aes(x=magnitude)) + geom_density() + scale_x_continuous(trans="log1p")
+
+ggplot(earthquakes1, aes(x=scale(magnitude, center=TRUE, scale=TRUE))) + geom_density()
+
+mean(earthquakes1$magnitude)
+median(earthquakes1$magnitude)
+
 
 ##Interactions between variables
 
-plot(latitude ~ PlateName + focal_depth, data = earthquakes)
+
+plot(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(latitude ~ PlateName * focal_depth, data = earthquakes)
+plot(latitude ~ PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName + focal_depth, data = earthquakes)
+plot(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName * focal_depth, data = earthquakes)
+plot(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(magnitude ~ latitude + longitude + PlateName + focal_depth, data = earthquakes)
+plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + focal_depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * focal_depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * focal_depth, data = earthquakes)
+plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = earthquakes)
 
 #Interactions between variables on North_American and Pacific plates
 
 ##Interactions between variables
 
-plot(latitude ~ PlateName + focal_depth, data = nap_earthquakes)
+plot(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(latitude ~ PlateName * focal_depth, data = nap_earthquakes)
+plot(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName + focal_depth, data = nap_earthquakes)
+plot(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName * focal_depth, data = nap_earthquakes)
+plot(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude + longitude + PlateName + focal_depth, data = nap_earthquakes)
+plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + focal_depth, data = nap_earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * focal_depth, data = nap_earthquakes)
+plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * focal_depth, data = nap_earthquakes)
+plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-#split data into training and testing set
-set.seed(100)
-split = sample.split(nap_earthquakes$magnitude, SplitRatio = 0.70)
-trainQuakes = subset(nap_earthquakes, split == TRUE)
-testQuakes = subset(nap_earthquakes, split == FALSE)
 
 #Creating Predictive Models
 
@@ -484,20 +496,18 @@ earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), sep = 
 
 #Linear Regression Models
 
-LRModel1 = lm(magnitude ~ latitude + longitude, data = nap_earthquakes)
+LRModel1 = lm(magnitude ~ latitude + longitude, data = earthquakes1)
 summary(LRModel1)
-
 
 LRModel2 = lm(magnitude ~ latitude * longitude, data = nap_earthquakes)
 summary(LRModel2)
 
-LRModel3 = lm(magnitude ~ latitude * longitude + focal_depth, data = earthquakes1)
+LRModel3 = lm(magnitude ~ latitude * longitude + log1p(focal_depth), data = earthquakes1)
 summary(LRModel3)
 
-LRModel4 = lm(magnitude ~ latitude * longitude + focal_depth + PlateName, data = earthquakes1)
+LRModel4 = lm(magnitude ~ latitude * longitude + log1p(focal_depth) + PlateName, data = earthquakes1)
 summary(LRModel4)
 
-LRModel5 = lm(magnitude ~ latitude * longitude + focal_depth * PlateName, data = earthquakes1)
+LRModel5 = lm(magnitude ~ latitude * longitude + log1p(focal_depth) * PlateName, data = earthquakes1)
 summary(LRModel5)
 
-LRModel6 = lm(magnitude ~ latitude + longitude + quake_date, data = earthquakes1)
