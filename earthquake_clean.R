@@ -8,6 +8,7 @@ library(geojsonio)
 library(maps)
 library(ggthemes)
 library(gganimate)
+library(caTools)
 
 #Import data from NOAA on significant earthquakes in recorded geologic history
 signif_earthquakes <- read_delim("signif (3).txt", 
@@ -378,7 +379,7 @@ ggplot(nap_earthquakes, aes(factor(year))) +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
   ggtitle("Number of Major Earthquakes per Year on North American and Pacific plates")
 
-#Boxplot of year vs magnitude on Pacific plate
+#Boxplot of year vs magnitude on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
@@ -441,8 +442,62 @@ plot(magnitude ~ latitude * longitude + PlateName * focal_depth, data = earthqua
 
 plot(magnitude ~ latitude * longitude * PlateName * focal_depth, data = earthquakes)
 
+#Interactions between variables on North_American and Pacific plates
+
+##Interactions between variables
+
+plot(latitude ~ PlateName + focal_depth, data = nap_earthquakes)
 
 
+plot(latitude ~ PlateName * focal_depth, data = nap_earthquakes)
 
 
+plot(longitude ~ PlateName + focal_depth, data = nap_earthquakes)
 
+
+plot(longitude ~ PlateName * focal_depth, data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude + longitude + PlateName + focal_depth, data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName + focal_depth, data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName * focal_depth, data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude * PlateName * focal_depth, data = nap_earthquakes)
+
+
+#split data into training and testing set
+set.seed(100)
+split = sample.split(nap_earthquakes$magnitude, SplitRatio = 0.70)
+trainQuakes = subset(nap_earthquakes, split == TRUE)
+testQuakes = subset(nap_earthquakes, split == FALSE)
+
+#Creating Predictive Models
+
+#Unite month, day, year columns
+earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+
+#Linear Regression Models
+
+LRModel1 = lm(magnitude ~ latitude + longitude, data = nap_earthquakes)
+summary(LRModel1)
+
+
+LRModel2 = lm(magnitude ~ latitude * longitude, data = nap_earthquakes)
+summary(LRModel2)
+
+LRModel3 = lm(magnitude ~ latitude * longitude + focal_depth, data = earthquakes1)
+summary(LRModel3)
+
+LRModel4 = lm(magnitude ~ latitude * longitude + focal_depth + PlateName, data = earthquakes1)
+summary(LRModel4)
+
+LRModel5 = lm(magnitude ~ latitude * longitude + focal_depth * PlateName, data = earthquakes1)
+summary(LRModel5)
+
+LRModel6 = lm(magnitude ~ latitude + longitude + quake_date, data = earthquakes1)
