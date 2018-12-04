@@ -459,9 +459,9 @@ plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = e
 
 plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = earthquakes)
 
+
 #Interactions between variables on North_American and Pacific plates
 
-##Interactions between variables
 
 plot(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
@@ -488,7 +488,8 @@ plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = n
 
 
 
-#Creating Predictive Models
+##Creating predictive models
+
 
 #Unite month, day, year columns
 earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), sep = "-")
@@ -510,4 +511,27 @@ summary(LRModel4)
 
 LRModel5 = lm(magnitude ~ latitude * longitude + log1p(focal_depth) * PlateName, data = earthquakes1)
 summary(LRModel5)
+
+LRModel6 = lm(magnitude ~ latitude * longitude * PlateName, data = earthquakes1)
+summary(LRModel6)
+
+LRModel7 = lm(magnitude ~ latitude * longitude + log1p(focal_depth), data = nap_earthquakes)
+summary(LRModel7)
+
+LRModel8 = lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, data = earthquakes1)
+summary(LRModel8)
+
+LRModel9 = lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, data = nap_earthquakes)
+summary(LRModel9)
+
+
+
+#Create binomial column for major earthquake classification
+
+earthquakes1$MajorEarthquakes = ifelse(earthquakes1$magnitude >= 7.0, 1, 0)
+head(earthquakes1)
+
+
+
+
 
