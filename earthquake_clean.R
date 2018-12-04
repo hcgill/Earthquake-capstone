@@ -531,7 +531,17 @@ summary(LRModel9)
 earthquakes1$MajorEarthquakes = ifelse(earthquakes1$magnitude >= 7.0, 1, 0)
 head(earthquakes1)
 
+table(earthquakes1$MajorEarthquakes)
 
+#Baseline model
+
+18059/18846
+
+#baseline model is 0.9582405
+
+#Logistic Regression model
+
+QuakeLog = glm(MajorEarthquakes ~ . , data = earthquakes1, family = binomial)
 
 
 
