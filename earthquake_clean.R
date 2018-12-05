@@ -533,7 +533,7 @@ head(earthquakes1)
 
 table(earthquakes1$MajorEarthquakes)
 
-#Baseline model
+#Baseline model for earthquakes1
 
 18059/18846
 
@@ -541,7 +541,42 @@ table(earthquakes1$MajorEarthquakes)
 
 #Logistic Regression model
 
-QuakeLog = glm(MajorEarthquakes ~ . , data = earthquakes1, family = binomial)
+QuakeLog1 = glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) , data = earthquakes1, family = binomial)
+summary(QuakeLog1)
 
+QuakeLog2 = glm(MajorEarthquakes ~ longitude * log1p(focal_depth), data = earthquakes1, family = binomial)
+summary(QuakeLog2)
 
+QuakeLog3 = glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, family = binomial)
+summary(QuakeLog3)
 
+QuakeLog4 = glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, family = binomial)
+summary(QuakeLog4)
+
+#Create binomial column for major earthquake classification for North American/Pacific plates
+
+nap_earthquakes$MajorEarthquakes = ifelse(nap_earthquakes$magnitude >= 7.0, 1, 0)
+head(nap_earthquakes)
+
+table(nap_earthquakes$MajorEarthquakes)
+
+#Baseline model for nap_earthquakes
+
+1395/1479
+
+#baseline model is 0.9432049
+
+NapQuakeLog1 = glm(MajorEarthquakes ~ latitude * longitude, data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog1)
+
+NapQuakeLog2 = glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog2)
+
+NapQuakeLog3 = glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog3)
+
+NapQuakeLog4 = glm(MajorEarthquakes ~ longitude * log1p(focal_depth), data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog4)
+
+NapQuakeLog5 = glm(MajorEarthquakes ~ log1p(focal_depth), data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog5)
