@@ -553,6 +553,7 @@ summary(QuakeLog3)
 QuakeLog4 = glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, family = binomial)
 summary(QuakeLog4)
 
+
 #Create binomial column for major earthquake classification for North American/Pacific plates
 
 nap_earthquakes$MajorEarthquakes = ifelse(nap_earthquakes$magnitude >= 7.0, 1, 0)
@@ -580,3 +581,14 @@ summary(NapQuakeLog4)
 
 NapQuakeLog5 = glm(MajorEarthquakes ~ log1p(focal_depth), data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
+
+anova(NapQuakeLog1, NapQuakeLog2, NapQuakeLog3, NapQuakeLog4, NapQuakeLog5)
+
+#Predicting using the best model(NapQuakeLog4)
+
+predictTrain = predict(NapQuakeLog4, type = "response")
+summary(predictTrain)
+
+#Are we predicting higher probabilities for Major Earthquakes (>7.0 magnitude?)
+
+tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
