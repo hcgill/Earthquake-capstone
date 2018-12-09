@@ -25,6 +25,14 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(lubridate)
+library(ggplot2)
+library(sp)
+library(geojsonio)
+library(maps)
+library(ggthemes)
+library(gganimate)
+library(caTools)
+library(reshape2)
 
 #Import data from NOAA on significant earthquakes in recorded geologic history
 signif_earthquakes <- read_delim("C:/Users/heath/Desktop/signif (3).txt", 
@@ -150,3 +158,86 @@ earthquakes <- as.data.frame(earthquakes)
 
 head(earthquakes)
 ```
+
+##Initial Exploration of Data
+
+After combining the data sets, an initial exploration was completed to identify any possible trends. Using the earthquakes, data set, a bargraph was created for year vs # of major earthquakes from 1965 through 2016. The bar graph yielded the following results, with a trend of an increasing number of earthquakes worldwide. A peak number of earthquakes appears in 2011, which had nearly 100 more significant earthquakes than any other year in recorded seismic history. 
+
+```{r, echo = FALSE, include = FALSE}
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year")
+```
+
+To get more detail on the magnitude of earthquakes that occurred by year, a boxplot was created for year against magnitude. Major earthquake outliers above a 9.0 magnitude appeared in both 2004 and 2011. However, as the data reveals, although there were more earthquakes in 2011, the majority of the earthquakes were within the 5.5 to 6.5 magnitude range. 
+
+```{r, echo = FALSE, include= FALSE}
+#Boxplot of Year vs. Magnitude
+ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs. Magnitude")
+```
+
+
+
+A boxplot of Plate name vs. magnitude was then created for all earthquakes in the data set. From this plot, it is easy to tell that the majority of significant earthquakes occuring on all plates register between a 5.5 and a 6.5 on the Richter scale. This tells us that the outlier events are above a 6.5. The plates that have extreme outliers (India, Burma, North America, Okhotsk) are plates that sit on top of convergent subduction zones, where pressure would built until one plate slips under the other, creating a large seismic event. 
+
+```{r, echo = FALSE, include= FALSE}
+
+#Boxplot of Plate name vs magnitude
+ggplot(earthquakes, aes(x = PlateName, y = magnitude)) + 
+  geom_boxplot() + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Outliers in magnitude on tectonic plates")
+```
+
+
+#Using a map to plot data
+The next step taken in the data exploration was to plot the earthquake occurences on a world map. Once the map of the tectonic plates was established, the earthquakes were then charted by year to see if there was a recognizable pattern. 
+
+```{r, echo= FALSE, include= FALSE}
+#Map Earthquake locations by magnitude (colored per tectonic plate location)
+world <- ggplot() +
+  borders("world", colour = "gray85", fill = "gray80") +
+  theme_map() 
+
+plate_map <- world +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName), data = earthquakes, alpha = .5) +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+plot(plate_map)
+
+#Map earthquake locations by year and magnitude (colored by year, size = magnitude)
+year_map <- world +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = year), data = earthquakes, alpha = .5) +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Year') +
+  theme(legend.position = "right")
+
+plot(year_map)
+```
+As the year plate map revealed, there were many significant earthquakes within the last ten years of the data set. To get a better look at the data, the map was restricted to just the data from 2006 through 2016. When that data was charted, the results were mixed and not quite clear. It became obvious that the most recent major earthquakes were along subduction zones such as the western edge of the South American continent and along the Aleutian islands of Alaska. Places where multiple plates met along the ring of fire (the western, northern, and eastern edges of the Pacific plate) experienced strong annual seismic events. Interestingly, the decade map also picked up increased seismic activity that was recorded in the middle of the tectonic plates. Some of this, such as the Hawaiian Islands, can be caused by 'hot spots' or thin, weak areas in the Earth's crust that allow magma to push through, forming a volcano. However, other seismic events, such as the ones recorded in arkansas, virginia, and the gulf of mexico, may be caused by human activity. As a result, the focus is on major earthquakes occurring at plate boundaries. 
+
+```{r}
+#Earthquakes from 2006-2016
+earthquakes2006_2016 <- filter(earthquakes, year > 2005)
+
+decade_map <- world +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = year), data = earthquakes2006_2016, alpha = .5) +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Year') +
+  theme(legend.position = "right")
+
+plot(decade_map)
+```
+
+
