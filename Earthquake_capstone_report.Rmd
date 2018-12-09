@@ -240,4 +240,114 @@ decade_map <- world +
 plot(decade_map)
 ```
 
+##Narrowing the data
 
+The next step in the data exploration was to narrow the data. This was done by restricting the data to just one or two plates and repeating the bar graph and the box plots. An animation was also added to better visualize the data. The plates that were tested individually were the Pacific plate, the North American Plate, the South American Plate, the Eurasian Plate, and the North American and Pacific Plates combined. Of these, the only restricted data to show a pattern was the North American and the Pacific plates. These two plates were combined because as the Pacific plate subducts under the North American plate, the seismic events are recorded on the North American plate. 
+
+```{r}
+#Filter for North American and Pacific plate earthquakes
+nap_earthquakes <- filter(earthquakes, PlateName == c("North America", "Pacific"))
+
+#Bar graph of year vs # of major earthquakes (1965-2016)
+ggplot(nap_earthquakes, aes(factor(year))) + 
+  geom_bar(stat = "count", fill = "dark red") + 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) + 
+  ggtitle("Number of Major Earthquakes per Year on North American and Pacific plates")
+
+#Boxplot of year vs magnitude on North American and Pacific plates
+ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), text=element_text(size=9)) +
+  ggtitle("Year vs Magnitude of earthquakes on North American and Pacific plates")
+
+#Unite month, day, year columns
+nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"), sep = "-")
+
+#Animate progression of earthquakes for North American and Pacific Plates
+ghost_points_ini <- tibble(
+  quake_date = as.Date('1965-01-01'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+ghost_points_fin <- tibble(
+  quake_date = seq(as.Date('2017-01-01'),
+                   as.Date('2017-01-02'),
+                   by = 'days'),
+  magnitude = 0, longitude = 0, latitude = 0)
+
+nap_animated_map <- world +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(nap_earthquakes, n = 100L), alpha = .5) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_ini, alpha = 0) +
+  geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the final transparent frames
+                 frame = quake_date,
+                 cumulative = FALSE),
+             data = ghost_points_fin, alpha = 0) +
+  scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
+  labs(size = 'magnitude', color = 'Plate Name') +
+  theme(legend.position = "right")
+
+gganimate::gg_animate(nap_animated_map)
+```
+
+After looking at the data and narrowing down interactions to the Pacific and North American tectonic plates, the next step was to look for interactions between variables. This was done through the following code for both the earthquakes data set as well as the narrowed North American/Pacific (NAP) data set. 
+
+```{r}
+##Interactions between variables
+
+
+plot(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+
+
+plot(latitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+
+
+plot(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+
+
+plot(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+
+
+plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = earthquakes)
+
+
+plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = earthquakes)
+
+
+#Interactions between variables on North_American and Pacific plates
+
+
+plot(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = nap_earthquakes)
+
+
+plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = nap_earthquakes)
+```
+
+
+Given the above interactions, regardless of the data set, the best interaction seems to be between longitude and focal depth of the earthquake. Based on the data, these two variables have the most significant impact on the magnitude of a major earthquake. 
