@@ -710,4 +710,19 @@ summary(predictTrain)
 tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 
 
+# binomial distributions --------------------------------------------------
 
+#binomial distribution for nap_earthquakes
+glm(cbind(84/1479) ~ 1, family = binomial("logit"), data = nap_earthquakes)
+
+#binomial distribution for all earthquakes
+glm(cbind(787, 18846) ~ 1, family = binomial("logit"), data = earthquakes1)
+
+
+# Poisson Models ----------------------------------------------------------
+
+#model for nap_earthquakes
+glm(MajorEarthquakes ~ 1, family = poisson("log"), data = nap_earthquakes)
+
+#model for all earthquakes
+glm(MajorEarthquakes ~ 1, family = poisson("log"), data = earthquakes1)
