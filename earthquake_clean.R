@@ -12,7 +12,6 @@ library(maps)
 library(ggthemes)
 library(gganimate)
 library(caTools)
-library(reshape2)
 
 
 # Import NOAA data set ----------------------------------------------------
@@ -637,9 +636,9 @@ table(earthquakes1$MajorEarthquakes)
 
 #Baseline model for earthquakes1
 
-18059/18846
+787/18846
 
-#baseline model is 0.9582405
+#baseline model is 0.04175952
 
 
 # Logistic Regression Models ----------------------------------------------
@@ -675,9 +674,9 @@ table(nap_earthquakes$MajorEarthquakes)
 
 #Baseline model for nap_earthquakes
 
-1395/1479
+84/1479
 
-#baseline model is 0.9432049
+#baseline model is 0.05679513
 
 NapQuakeLog1 = glm(MajorEarthquakes ~ latitude * longitude, 
                    data = nap_earthquakes, family = binomial)
