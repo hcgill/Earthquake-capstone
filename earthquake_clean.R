@@ -517,64 +517,62 @@ median(earthquakes1$magnitude)
 # Interactions between variables ------------------------------------------
 
 
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(latitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
-
-
-plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
+pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
      data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
      data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
      data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
      data = earthquakes)
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-plot(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
+pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
      data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
      data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
      data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
+pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
      data = nap_earthquakes)
 
 
