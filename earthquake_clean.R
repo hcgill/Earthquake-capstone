@@ -592,36 +592,36 @@ earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"),
 
 
 
-LRModel1 = lm(magnitude ~ latitude + longitude, data = earthquakes1)
+LRModel1 <-lm(magnitude ~ latitude + longitude, data = earthquakes1)
 summary(LRModel1)
 
-LRModel2 = lm(magnitude ~ latitude * longitude, data = nap_earthquakes)
+LRModel2 <-lm(magnitude ~ latitude * longitude, data = nap_earthquakes)
 summary(LRModel2)
 
-LRModel3 = lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
+LRModel3 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
               data = earthquakes1)
 summary(LRModel3)
 
-LRModel4 = lm(magnitude ~ latitude * longitude + log1p(focal_depth) + PlateName, 
+LRModel4 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth) + PlateName, 
               data = earthquakes1)
 summary(LRModel4)
 
-LRModel5 = lm(magnitude ~ latitude * longitude + log1p(focal_depth) * PlateName, 
+LRModel5 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth) * PlateName, 
               data = earthquakes1)
 summary(LRModel5)
 
-LRModel6 = lm(magnitude ~ latitude * longitude * PlateName, data = earthquakes1)
+LRModel6 <-lm(magnitude ~ latitude * longitude * PlateName, data = earthquakes1)
 summary(LRModel6)
 
-LRModel7 = lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
+LRModel7 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
               data = nap_earthquakes)
 summary(LRModel7)
 
-LRModel8 = lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
+LRModel8 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
               data = earthquakes1)
 summary(LRModel8)
 
-LRModel9 = lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
+LRModel9 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
               data = nap_earthquakes)
 summary(LRModel9)
 
@@ -634,32 +634,32 @@ head(earthquakes1)
 
 table(earthquakes1$MajorEarthquakes)
 
-#Baseline model for earthquakes1
+#Null model for earthquakes1
 
 787/18846
 
-#baseline model is 0.04175952
+#null model is 0.04175952
 
 
 # Logistic Regression Models ----------------------------------------------
 
 
-QuakeLog1 = glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
                 data = earthquakes1, family = binomial)
 summary(QuakeLog1)
 
 
-QuakeLog2 = glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
+QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                 data = earthquakes1, family = binomial)
 summary(QuakeLog2)
 
 
-QuakeLog3 = glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
+QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog3)
 
 
-QuakeLog4 = glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
+QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog4)
 
@@ -672,29 +672,29 @@ head(nap_earthquakes)
 
 table(nap_earthquakes$MajorEarthquakes)
 
-#Baseline model for nap_earthquakes
+#Null model for nap_earthquakes
 
 84/1479
 
-#baseline model is 0.05679513
+#null model is 0.05679513
 
-NapQuakeLog1 = glm(MajorEarthquakes ~ latitude * longitude, 
+NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
 
-NapQuakeLog2 = glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
+NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
 
-NapQuakeLog3 = glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
+NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
 
-NapQuakeLog4 = glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
+NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
 
-NapQuakeLog5 = glm(MajorEarthquakes ~ log1p(focal_depth), 
+NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
 
