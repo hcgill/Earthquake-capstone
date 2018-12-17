@@ -710,17 +710,30 @@ tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 
 # binomial distributions --------------------------------------------------
 
+#binomial distribution for earthquakes1
+eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
+  summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
+
+glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+    family=binomial("logit"), data=eq_agg_df)
+
+
 #binomial distribution for nap_earthquakes
-glm(cbind(84/1479) ~ 1, family = binomial("logit"), data = nap_earthquakes)
+eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
+  summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-#binomial distribution for all earthquakes
-glm(cbind(787, 18846) ~ 1, family = binomial("logit"), data = earthquakes1)
-
+glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
+    family = binomial("logit"), data = eq_agg_df_nap)
 
 # Poisson Models ----------------------------------------------------------
 
-#model for nap_earthquakes
-glm(MajorEarthquakes ~ 1, family = poisson("log"), data = nap_earthquakes)
+#Poisson distribution for earthquakes1
 
-#model for all earthquakes
-glm(MajorEarthquakes ~ 1, family = poisson("log"), data = earthquakes1)
+
+
+
+#Poisson distribution for nap_earthquakes
+
+
+
+
