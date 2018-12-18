@@ -729,11 +729,11 @@ glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
 
 #Poisson distribution for earthquakes1
 
-
+glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
 
 
 #Poisson distribution for nap_earthquakes
 
-
+glm(TotalMajor ~ PlateName, family = poisson("log"), data = eq_agg_df_nap)
 
 
