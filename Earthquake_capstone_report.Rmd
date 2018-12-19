@@ -391,9 +391,14 @@ pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth),
 
 Given the above interactions, regardless of the data set, the best interaction seems to be between longitude and focal depth of the earthquake. Based on the data, these two variables have the most significant impact on the magnitude of a major earthquake. This does make sense as many subduction zones run along longitudinal lines and an earthquake close to the surface would have a stronger magnitude than one that is deep below the surface and has to travel through many layers of earth prior to reaching the seismographs. 
 
-```{r}
 ##Creating predictive models
 
+After analyzing the above interactions, several predictive models were created to attempt to better predict the magnitude of major earthquakes. The models that were used included linear regression, logistic regression, binomial distributions, and the Poisson model. 
+
+#Linear Regression
+As was discovered earlier, there are multiple variables that can impact an earthquake's magnitude. Due to this, multiple linear regression was used to attempt to find if there is a linear relationship between the variables. 
+
+```{r}
 
 #Unite month, day, year columns
 earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), 
@@ -439,7 +444,10 @@ LRModel9 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName,
 summary(LRModel9)
 ```
 
+Going through the results of the linear regressions, the first thing that is noticed is the lack of symmetry in residual values, indicating that predicted magnitudes are not close to actual magnitudes. The next thing that draws the attention from this model is the coeffictients vary substantially in value, particularly in the models that include individual tectonic plates (PlateName). Nexxt, it is clear that for many of the models, the variables produce a t-value that is close to zero, demonstrating that the linear regression model does not show a linear relationship between the variables. Lastly, when looking at the R-squared values, it is clear that as all models are close to zero, this method of machine learning is not the best option for this data set. 
 
+
+#Logistic Regression
 
 ```{r}
 #Create binomial column for major earthquake classification
