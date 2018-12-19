@@ -486,7 +486,13 @@ QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1,
                 family = binomial)
 summary(QuakeLog4)
 
+```
+ 
+Reviewing the models for logistic regression for all earthquakes, it becomes clear that a logistic regression does not accurately predict magnitude for earthquakes. In these results, the deviance values are all quite large (6000+) as are the AIC values (also 6000+). 
 
+With this in mind, the NAP data was also assessed using logistic regression. 
+
+```{r}
 #Create binomial column for major earthquake classification for NAP data
 
 nap_earthquakes$MajorEarthquakes = 
@@ -533,7 +539,9 @@ summary(predictTrain)
 tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 ```
 
+Looking at the results of the logistic regression for the North American and Pacific plates, it is clear that a logistic regression model better fits this restricted data set rather than the entire earthquakes set. The deviances are 1/10 of the values found in the larger set: deviances hover around 600 as do AIC value. Still, there is likely a better model for this.
 
+##Binomial distributions
 
 ```{r}
 # binomial distributions --------------------------------------------------
@@ -554,7 +562,7 @@ glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family = binomial("logit"), data = eq_agg_df_nap)
 ```
 
-
+ 
 
 ```{r}
 # Poisson Models ----------------------------------------------------------
