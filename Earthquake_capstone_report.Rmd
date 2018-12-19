@@ -544,7 +544,6 @@ Looking at the results of the logistic regression for the North American and Pac
 ##Binomial distributions
 
 ```{r}
-# binomial distributions --------------------------------------------------
 
 #binomial distribution for earthquakes1
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
@@ -562,10 +561,14 @@ glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family = binomial("logit"), data = eq_agg_df_nap)
 ```
 
+ From the binomial distribution of all earthquakes, it is clear to see that this model is a better fit than either the linear reression or the logistic regression. Plates that have subduction boundaries have coefficients closest to zero while plates with little movement or smaller, transverse boundaries have large coefficients, indicating their lower likelihood of experiencing a major tremor. 
  
+However, things get more interesting when applying the binomial distribution to the North American/Pacific plates. In this model, the residual deviance is extremely low, indicating that this plate has a higher probability of experiencing a major earthquake. 
+
+
+##Poisson Models
 
 ```{r}
-# Poisson Models ----------------------------------------------------------
 
 #Poisson distribution for earthquakes1
 
