@@ -32,11 +32,10 @@ library(maps)
 library(ggthemes)
 library(gganimate)
 library(caTools)
-library(reshape2)
 
 #Import data from NOAA on significant earthquakes in recorded geologic history
-signif_earthquakes <- read_delim("C:/Users/heath/Desktop/signif (3).txt", 
-                        "\t", escape_double = FALSE, trim_ws = TRUE)
+signif_earthquakes <- read_delim("signif (3).txt", 
+                                 "\t", escape_double = FALSE, trim_ws = TRUE)
 
 #Save as data frame
 signif_earthquakes <- as.data.frame(signif_earthquakes, stringsAsFactors = FALSE)
@@ -66,7 +65,7 @@ The next step in the cleaning of data was to address the USGS data set from Kagg
 
 ```{r, echo = FALSE, include = FALSE}
 #Import data from USGS on earthquakes larger than 5.5 (as measured on the Richter Scale) from 1965-2016
-USGS_earthquakes <- read_csv("C:/Users/heath/Desktop/database.csv")
+USGS_earthquakes <- read_csv("database.csv")
 
 #Save USGS data set as a data frame (from csv)
 USGS_df <- as.data.frame(USGS_earthquakes)
@@ -127,13 +126,12 @@ summary(earthquakes)
 However, one more data set was needed to complete the analysis. Stored as  JSON file, this data set contained the plate bounddaries of each plate by connecting a series of coordinates. This file was uploaded and read using the geojsonio package. Once loaded, the earthquakes data set was overlaid onto the plate boundaries data set. 
 
 ```{r}
-library(sp)
-library(geojsonio)
 
 # Import data for tectonic plate boundaries
 plate_data <- "PB2002_plates.json"
 plates <- geojson_read(plate_data, what = "sp")  
 
+plot(plates)
 
 # convert list of earthquake points into a SpatialPointsDataFrame
 coordinates(earthquakes) <- ~ longitude + latitude
@@ -161,7 +159,7 @@ head(earthquakes)
 
 ##Initial Exploration of Data
 
-After combining the data sets, an initial exploration was completed to identify any possible trends. Using the earthquakes, data set, a bargraph was created for year vs # of major earthquakes from 1965 through 2016. The bar graph yielded the following results, with a trend of an increasing number of earthquakes worldwide. A peak number of earthquakes appears in 2011, which had nearly 100 more significant earthquakes than any other year in recorded seismic history. 
+After combining the data sets, an initial exploration was completed to identify any possible trends. Using the earthquakes, data set, a bar graph was created for year vs # of major earthquakes from 1965 through 2016. The bar graph yielded the following results, with a trend of an increasing number of earthquakes worldwide. A peak number of earthquakes appears in 2011, which had nearly 100 more significant earthquakes than any other year in recorded seismic history. 
 
 ```{r, echo = FALSE, include = FALSE}
 
@@ -224,7 +222,9 @@ year_map <- world +
 
 plot(year_map)
 ```
-As the year plate map revealed, there were many significant earthquakes within the last ten years of the data set. To get a better look at the data, the map was restricted to just the data from 2006 through 2016. When that data was charted, the results were mixed and not quite clear. It became obvious that the most recent major earthquakes were along subduction zones such as the western edge of the South American continent and along the Aleutian islands of Alaska. Places where multiple plates met along the ring of fire (the western, northern, and eastern edges of the Pacific plate) experienced strong annual seismic events. Interestingly, the decade map also picked up increased seismic activity that was recorded in the middle of the tectonic plates. Some of this, such as the Hawaiian Islands, can be caused by 'hot spots' or thin, weak areas in the Earth's crust that allow magma to push through, forming a volcano. However, other seismic events, such as the ones recorded in arkansas, virginia, and the gulf of mexico, may be caused by human activity. As a result, the focus is on major earthquakes occurring at plate boundaries. 
+As the year plate map revealed, there were many significant earthquakes within the last ten years of the data set. To get a better look at the data, the map was restricted to just the data from 2006 through 2016. When that data was charted, the results were mixed and not quite clear. It became obvious that the most recent major earthquakes were along subduction zones such as the western edge of the South American continent and along the Aleutian islands of Alaska. Places where multiple plates met along the ring of fire (the western, northern, and eastern edges of the Pacific plate) experienced strong annual seismic events. 
+
+Interestingly, the decade map also picked up increased seismic activity that was recorded in the middle of the tectonic plates. Some of this, such as the Hawaiian Islands, can be caused by 'hot spots' or thin, weak areas in the Earth's crust that allow magma to push through, forming a volcano. However, other seismic events, such as the ones recorded in arkansas, virginia, and the gulf of mexico, may be caused by human activity. As a result, the focus is on major earthquakes occurring at plate boundaries. 
 
 ```{r}
 #Earthquakes from 2006-2016
@@ -275,8 +275,11 @@ ghost_points_fin <- tibble(
   magnitude = 0, longitude = 0, latitude = 0)
 
 nap_animated_map <- world +
-  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1) +
-  geom_point(aes(x = longitude, y = latitude, size = magnitude, color = PlateName, frame = as.Date(quake_date), cumulative = FALSE), data = head(nap_earthquakes, n = 100L), alpha = .5) +
+  geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1)+
+  geom_point(aes(x = longitude, y = latitude, size = magnitude, 
+                 color = PlateName, frame = as.Date(quake_date), 
+                 cumulative = FALSE), data = head(nap_earthquakes, n = 100L), 
+             alpha = .5) +
   geom_point(aes(x = longitude, y = latitude, size = magnitude,  # this is the init transparent frame
                  frame = quake_date,
                  cumulative = FALSE),
@@ -294,60 +297,268 @@ gganimate::gg_animate(nap_animated_map)
 
 After looking at the data and narrowing down interactions to the Pacific and North American tectonic plates, the next step was to look for interactions between variables. This was done through the following code for both the earthquakes data set as well as the narrowed North American/Pacific (NAP) data set. 
 
+
+##Checking for skew of variables
+
+```{r}
+hist(earthquakes$focal_depth)
+hist(log1p(earthquakes$focal_depth))
+
+
+ggplot(earthquakes1, aes(x=magnitude)) + geom_density()
+
+ggplot(earthquakes1, aes(x=magnitude)) + geom_density() + 
+  scale_x_continuous(trans="log1p")
+
+ggplot(earthquakes1, aes(x=scale(magnitude, center=TRUE, scale=TRUE))) + 
+  geom_density()
+
+mean(earthquakes1$magnitude)
+median(earthquakes1$magnitude)
+```
+
+The next step in the analysis was to check for a skew in the variables; is the data skewed to the left or the right? In this case, it was discovered tha the focal depth was skewed to the right. The magnitude, although already measured on a log scale, was revealed to be minimally skewed to the right. To correct this, the focal depth measurements were adjusted by using log1p(focal_depth) in place of the direct value of the focal depth. 
+
+
+##Interactions between variables
+
+The next step was to directly analyze interactions between pairs of variables. Due to the above graphic exploration, the interactions were analyzed across the entire data set, earthquakes, and across the restricted North American & Pacific Plate earthquakes (nap_earthquakes). 
+
 ```{r}
 ##Interactions between variables
 
 
-plot(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(latitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-plot(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
 
 
-plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = earthquakes)
+pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
+     data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = earthquakes)
+pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
+     data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = earthquakes)
+pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
+     data = earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = earthquakes)
+pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
+     data = earthquakes)
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-plot(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
+     data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
+     data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
+     data = nap_earthquakes)
 
 
-plot(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
+     data = nap_earthquakes)
+
 ```
 
 
-Given the above interactions, regardless of the data set, the best interaction seems to be between longitude and focal depth of the earthquake. Based on the data, these two variables have the most significant impact on the magnitude of a major earthquake. 
+Given the above interactions, regardless of the data set, the best interaction seems to be between longitude and focal depth of the earthquake. Based on the data, these two variables have the most significant impact on the magnitude of a major earthquake. This does make sense as many subduction zones run along longitudinal lines and an earthquake close to the surface would have a stronger magnitude than one that is deep below the surface and has to travel through many layers of earth prior to reaching the seismographs. 
+
+```{r}
+##Creating predictive models
+
+
+#Unite month, day, year columns
+earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), 
+                      sep = "-")
+
+
+
+# Linear Regression Models ------------------------------------------------
+
+
+
+LRModel1 <-lm(magnitude ~ latitude + longitude, data = earthquakes1)
+summary(LRModel1)
+
+LRModel2 <-lm(magnitude ~ latitude * longitude, data = nap_earthquakes)
+summary(LRModel2)
+
+LRModel3 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
+              data = earthquakes1)
+summary(LRModel3)
+
+LRModel4 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth) + PlateName, 
+              data = earthquakes1)
+summary(LRModel4)
+
+LRModel5 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth) * PlateName, 
+              data = earthquakes1)
+summary(LRModel5)
+
+LRModel6 <-lm(magnitude ~ latitude * longitude * PlateName, data = earthquakes1)
+summary(LRModel6)
+
+LRModel7 <-lm(magnitude ~ latitude * longitude + log1p(focal_depth), 
+              data = nap_earthquakes)
+summary(LRModel7)
+
+LRModel8 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
+              data = earthquakes1)
+summary(LRModel8)
+
+LRModel9 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName, 
+              data = nap_earthquakes)
+summary(LRModel9)
+```
+
+
+
+```{r}
+#Create binomial column for major earthquake classification
+
+earthquakes1$MajorEarthquakes = ifelse(earthquakes1$magnitude >= 7.0, 1, 0)
+head(earthquakes1)
+
+table(earthquakes1$MajorEarthquakes)
+
+#Null model for earthquakes1
+
+787/18846
+
+#null model is 0.04175952
+
+
+# Logistic Regression Models ----------------------------------------------
+
+
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
+                data = earthquakes1, family = binomial)
+summary(QuakeLog1)
+
+
+QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
+                data = earthquakes1, family = binomial)
+summary(QuakeLog2)
+
+
+QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
+                family = binomial)
+summary(QuakeLog3)
+
+
+QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
+                family = binomial)
+summary(QuakeLog4)
+
+
+#Create binomial column for major earthquake classification for NAP data
+
+nap_earthquakes$MajorEarthquakes = 
+  ifelse(nap_earthquakes$magnitude >= 7.0, 1, 0)
+head(nap_earthquakes)
+
+table(nap_earthquakes$MajorEarthquakes)
+
+#Null model for nap_earthquakes
+
+84/1479
+
+#null model is 0.05679513
+
+NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
+                   data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog1)
+
+NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
+                   data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog2)
+
+NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
+                   data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog3)
+
+NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
+                   data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog4)
+
+NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
+                   data = nap_earthquakes, family = binomial)
+summary(NapQuakeLog5)
+
+anova(NapQuakeLog1, NapQuakeLog2, NapQuakeLog3, NapQuakeLog4, NapQuakeLog5)
+
+#Predicting using the best model(NapQuakeLog4)
+
+predictTrain = predict(NapQuakeLog4, type = "response")
+summary(predictTrain)
+
+#Are we predicting higher probabilities for Major Earthquakes (>7.0 magnitude?)
+
+tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
+```
+
+
+
+```{r}
+# binomial distributions --------------------------------------------------
+
+#binomial distribution for earthquakes1
+eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
+  summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
+
+glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+    family=binomial("logit"), data=eq_agg_df)
+
+
+#binomial distribution for nap_earthquakes
+eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
+  summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
+
+glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
+    family = binomial("logit"), data = eq_agg_df_nap)
+```
+
+
+
+```{r}
+# Poisson Models ----------------------------------------------------------
+
+#Poisson distribution for earthquakes1
+
+glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+
+
+#Poisson distribution for nap_earthquakes
+
+glm(TotalMajor ~ PlateName, family = poisson("log"), data = eq_agg_df_nap)
+```
+
+
