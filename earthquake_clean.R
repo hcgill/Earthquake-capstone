@@ -714,26 +714,57 @@ tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family=binomial("logit"), data=eq_agg_df)
+
+summary(bd_model)
+
+#measuring relative & absolute effects of binomial distributions
+
+exp(coef(bd_model))  #relative effects
+
+plogis(-3.773)
+plogis(-3.773 + coef(bd_model)) #absolute effects
 
 
 #binomial distribution for nap_earthquakes
 eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
+nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
     family = binomial("logit"), data = eq_agg_df_nap)
+
+summary(nap_model)
+
+#measuring relative & absolute effects of binomial distributions for nap data
+
+exp(coef(nap_model))  #relative effects
+
+plogis(-2.82138)
+plogis(-2.82138 + coef(nap_model)) #absolute effects
+
+
+
+
 
 # Poisson Models ----------------------------------------------------------
 
 #Poisson distribution for earthquakes1
 
-glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+p_model <- glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+
+summary(p_model)
+
+exp(coef(p_model))
 
 
 #Poisson distribution for nap_earthquakes
 
-glm(TotalMajor ~ PlateName, family = poisson("log"), data = eq_agg_df_nap)
+nap_p_model <- glm(TotalMajor ~ PlateName, family = poisson("log"), 
+                 data = eq_agg_df_nap)
+
+summary(nap_p_model)
+
+exp(coef(nap_p_model))
 
 
