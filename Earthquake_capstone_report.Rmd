@@ -444,29 +444,12 @@ Plate earthquakes (nap_earthquakes).
 pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
 
 
-pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes)
-
-
 pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
-
-
-pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
      data = earthquakes)
 
-
-pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
-
-
-pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = earthquakes)
-
-
-pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = earthquakes)
 
 
 #Interactions between variables on North_American and Pacific plates
@@ -475,29 +458,13 @@ pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth),
 pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
 
 
-pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
-
-
 pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
-
-
-pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
      data = nap_earthquakes)
 
 
-pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
-
-
-pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
-
-
-pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
 
 ```
 
@@ -604,31 +571,22 @@ QuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
                 data = earthquakes1, family = binomial)
 summary(QuakeLog1)
 
-1-pchisq(6533.0, 18843)
-1-pchisq(6491.1, 18836)
 
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                 data = earthquakes1, family = binomial)
 summary(QuakeLog2)
 
-1-pchisq(6533.0, 18843)
-1-pchisq(6501.7, 18840)
 
 
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog3)
 
-1-pchisq(6533.0, 18843)
-1-pchisq(6511.0, 18842)
 
 
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog4)
-
-1-pchisq(6539.4, 18845)
-1-pchisq(6524.8, 18842)
 
 ```
  
@@ -661,36 +619,31 @@ NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude,
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
 
-1-pchisq(645.01, 1478)
-1-pchisq(639.23, 1475)
+
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
 
-1-pchisq(645.01, 1478)
-1-pchisq(629.69, 1471)
+
 
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
 
-1-pchisq(645.01, 1478)
-1-pchisq(638.14, 1475)
+
 
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
 
-1-pchisq(645.01, 1478)
-1-pchisq(637.64, 1475)
+
 
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
 
-1-pchisq(645.01, 1478)
-1-pchisq(640.90, 1477)
+
 
 anova(NapQuakeLog1, NapQuakeLog2, NapQuakeLog3, NapQuakeLog4, NapQuakeLog5)
 
