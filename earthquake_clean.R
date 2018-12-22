@@ -641,25 +641,30 @@ table(earthquakes1$MajorEarthquakes)
 
 # Logistic Regression Models ----------------------------------------------
 
-
-QuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
-                data = earthquakes1, family = binomial)
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) ,
+                 data = earthquakes1, family = binomial)
 summary(QuakeLog1)
+car::Anova(QuakeLog1)
 
 
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
-                data = earthquakes1, family = binomial)
+                 data = earthquakes1, family = binomial)
 summary(QuakeLog2)
+car::Anova(QuakeLog2)
+
 
 
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
-                family = binomial)
+                 family = binomial)
 summary(QuakeLog3)
+car::Anova(QuakeLog3)
+
 
 
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
-                family = binomial)
+                 family = binomial)
 summary(QuakeLog4)
+car::Anova(QuakeLog4)
 
 
 #Create binomial column for major earthquake classification for NAP data
@@ -677,26 +682,31 @@ table(nap_earthquakes$MajorEarthquakes)
 #null model is 0.05679513
 
 NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
-                   data = nap_earthquakes, family = binomial)
+                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
+car::Anova(NapQuakeLog1)
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
+car::Anova(NapQuakeLog2)
 
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
+car::Anova(NapQuakeLog3)
 
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
+car::Anova(NapQuakeLog4)
 
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
+car::Anova(NapQuakeog5)
 
-anova(NapQuakeLog1, NapQuakeLog2, NapQuakeLog3, NapQuakeLog4, NapQuakeLog5)
+
 
 #Predicting using the best model(NapQuakeLog4)
 
@@ -706,7 +716,6 @@ summary(predictTrain)
 #Are we predicting higher probabilities for Major Earthquakes (>7.0 magnitude?)
 
 tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
-
 
 # binomial distributions --------------------------------------------------
 
