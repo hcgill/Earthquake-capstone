@@ -692,8 +692,7 @@ NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude,
                     data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
 knitr::kable(car::Anova(NapQuakeLog1))
-summary(glht(NapQuakeLog1, linfct = mcp(latitude = "Tukey", 
-                                     covariate_average = TRUE)))
+
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
