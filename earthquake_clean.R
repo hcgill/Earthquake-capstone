@@ -650,7 +650,9 @@ car::Anova(QuakeLog1)
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                  data = earthquakes1, family = binomial)
 summary(QuakeLog2)
-car::Anova(QuakeLog2)
+QL2 <-car::Anova(QuakeLog2)
+knitr::kable(QL2)
+
 
 
 
@@ -723,8 +725,8 @@ tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
-    family=binomial("logit"), data=eq_agg_df)
+bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName + 
+                  log1p(focal_depth), family=binomial("logit"), data=eq_agg_df)
 
 summary(bd_model)
 
@@ -740,8 +742,9 @@ plogis(-3.773 + coef(bd_model)) #absolute effects
 eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
-    family = binomial("logit"), data = eq_agg_df_nap)
+nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName +
+                   log1p(focal_depth), family = binomial("logit"), 
+                 data = eq_agg_df_nap)
 
 summary(nap_model)
 
@@ -760,7 +763,8 @@ plogis(-2.82138 + coef(nap_model)) #absolute effects
 
 #Poisson distribution for earthquakes1
 
-p_model <- glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+p_model <- glm(TotalMajor ~ PlateName + log1p(focal_depth), 
+               family=poisson("log"), data=eq_agg_df)
 
 summary(p_model)
 
@@ -769,8 +773,8 @@ exp(coef(p_model))
 
 #Poisson distribution for nap_earthquakes
 
-nap_p_model <- glm(TotalMajor ~ PlateName, family = poisson("log"), 
-                 data = eq_agg_df_nap)
+nap_p_model <- glm(TotalMajor ~ PlateName + log1p(focal_depth), 
+                   family = poisson("log"), data = eq_agg_df_nap)
 
 summary(nap_p_model)
 
