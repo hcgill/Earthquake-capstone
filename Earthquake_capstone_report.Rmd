@@ -567,26 +567,33 @@ table(earthquakes1$MajorEarthquakes)
 # Logistic Regression Models ----------------------------------------------
 
 
-QuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth) ,
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) ,
                 data = earthquakes1, family = binomial)
 summary(QuakeLog1)
+car::Anova(QuakeLog1)
 
 
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                 data = earthquakes1, family = binomial)
 summary(QuakeLog2)
+car::Anova(QuakeLog2)
 
 
 
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog3)
+car::Anova(QuakeLog3)
 
 
 
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
                 family = binomial)
 summary(QuakeLog4)
+car::Anova(QuakeLog4)
+
+
+
 
 ```
  
@@ -618,34 +625,29 @@ table(nap_earthquakes$MajorEarthquakes)
 NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
-
-
+car::Anova(NapQuakeLog1)
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
-
-
+car::Anova(NapQuakeLog2)
 
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
-
-
+car::Anova(NapQuakeLog3)
 
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
-
-
+car::Anova(NapQuakeLog4)
 
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
+car::Anova(NapQuakeog5)
 
 
-
-anova(NapQuakeLog1, NapQuakeLog2, NapQuakeLog3, NapQuakeLog4, NapQuakeLog5)
 
 #Predicting using the best model(NapQuakeLog4)
 
@@ -672,16 +674,35 @@ indicate that these models are not better than the null model.
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family=binomial("logit"), data=eq_agg_df)
+
+summary(bd_model)
+
+#measuring relative & absolute effects of binomial distributions
+
+exp(coef(bd_model))  #relative effects
+
+plogis(-3.773)
+plogis(-3.773 + coef(bd_model)) #absolute effects
 
 
 #binomial distribution for nap_earthquakes
 eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
+nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
     family = binomial("logit"), data = eq_agg_df_nap)
+
+summary(nap_model)
+
+#measuring relative & absolute effects of binomial distributions for nap data
+
+exp(coef(nap_model))  #relative effects
+
+plogis(-2.82138)
+plogis(-2.82138 + coef(nap_model)) #absolute effects
+
 ```
 
  From the binomial regression of all earthquakes, it is clear to see that this 
@@ -703,12 +724,21 @@ experiencing a major earthquake.
 
 #Poisson distribution for earthquakes1
 
-glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+p_model <- glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
+
+summary(p_model)
+
+exp(coef(p_model))
 
 
 #Poisson distribution for nap_earthquakes
 
-glm(TotalMajor ~ PlateName, family = poisson("log"), data = eq_agg_df_nap)
+nap_p_model <- glm(TotalMajor ~ PlateName, family = poisson("log"), 
+                 data = eq_agg_df_nap)
+
+summary(nap_p_model)
+
+exp(coef(nap_p_model))
 ```
 
 
