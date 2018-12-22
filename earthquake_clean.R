@@ -12,6 +12,7 @@ library(maps)
 library(ggthemes)
 library(gganimate)
 library(caTools)
+library(multcomp)
 
 
 # Import NOAA data set ----------------------------------------------------
@@ -641,17 +642,21 @@ table(earthquakes1$MajorEarthquakes)
 
 # Logistic Regression Models ----------------------------------------------
 
-QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) ,
-                 data = earthquakes1, family = binomial)
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) +
+                   PlateName, data = earthquakes1, family = binomial)
 summary(QuakeLog1)
-car::Anova(QuakeLog1)
+knitr::kable(car::Anova(QuakeLog1))
+summary(glht(QuakeLog1, linfct = mcp(PlateName = "Tukey", 
+                                     covariate_average = TRUE, 
+                                     interaction_average = TRUE)))
 
 
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                  data = earthquakes1, family = binomial)
 summary(QuakeLog2)
-QL2 <-car::Anova(QuakeLog2)
-knitr::kable(QL2)
+knitr::kable(car::Anova(QuakeLog2))
+summary(glht(QuakeLog2, linfct = mcp(longitude = "Tukey", 
+                                     covariate_average = TRUE)))
 
 
 
@@ -659,14 +664,14 @@ knitr::kable(QL2)
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
                  family = binomial)
 summary(QuakeLog3)
-car::Anova(QuakeLog3)
+knitr::kable(car::Anova(QuakeLog3))
 
 
 
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
                  family = binomial)
 summary(QuakeLog4)
-car::Anova(QuakeLog4)
+knitr::kable(car::Anova(QuakeLog4))
 
 
 #Create binomial column for major earthquake classification for NAP data
@@ -686,27 +691,29 @@ table(nap_earthquakes$MajorEarthquakes)
 NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
                     data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
-car::Anova(NapQuakeLog1)
+knitr::kable(car::Anova(NapQuakeLog1))
+summary(glht(NapQuakeLog1, linfct = mcp(latitude = "Tukey", 
+                                     covariate_average = TRUE)))
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
-car::Anova(NapQuakeLog2)
+knitr::kable(car::Anova(NapQuakeLog2))
 
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
-car::Anova(NapQuakeLog3)
+knitr::kable(car::Anova(NapQuakeLog3))
 
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
-car::Anova(NapQuakeLog4)
+knitr::kable(car::Anova(NapQuakeLog4))
 
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
-car::Anova(NapQuakeog5)
+knitr::kable(car::Anova(NapQuakeLog5))
 
 
 
