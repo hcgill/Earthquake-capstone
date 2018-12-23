@@ -773,6 +773,13 @@ major earthquake occurring on this plate.
 
 ##Conclusion
 
+After gathering and analyzing two data sets covering global earthquakes with a
+magnitude of 5.5 or higher (as measured by the Richter scale), a relationship 
+was found to exist between magnitude and longitude as well as magnitude and 
+focal depth. Given what is known about earthquakes, this information is not 
+surprising as subduction zones often occur along the longitudinal lines that
+create a border along the Pacifc tectonic plate, a part of the Ring of Fire. 
+
 
 
 
