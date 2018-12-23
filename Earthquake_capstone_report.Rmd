@@ -799,6 +799,7 @@ zone impacts magnitude. Current geologic knowledge indicates that subduction
 zones cause the largest quakes; however, the amount of time that earthquakes 
 have been able to be accurately measured is small when compared to the geologic
 timeline and it is possible that a strike-slip fault may also trigger 
-less-frequent major quakes. 
-
+less-frequent major quakes. The last addition would be a mixed effects model
+where the data would be analyzed to attempt to establish any possible patterns
+that may exist between subgroups of data (such as plate location). 
 
