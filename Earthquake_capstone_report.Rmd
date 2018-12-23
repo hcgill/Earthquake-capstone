@@ -790,14 +790,15 @@ may occur.
 For future analysis, I would propose a few additions. The first modification to
 this analysis would be to analyze the data using a time series model as this 
 may show a relationship between the time different earthquakes occurred on a
-given plate. This type of analysis would likely work best on a plate that has
-similar to characteristics the Pacific plate: large numbers of significant 
-quakes (magnitude 5.5 or larger), constantly moving, a variety of types of fault
-zones. Another addition would include adding a data set that classifies the type
-of fault zone and to run an analysis on how fault zone impacts magnitude. 
-Current geologic knowledge indicates that subduction zones cause the largest 
-quakes; however, the amount of time that earthquakes have been able to be 
-accurately measured is small when compared to the geologic timeline and it is 
-possible that a strike-slip fault may also trigger less-frequent major quakes. 
+given plate, as well as their locations. This type of analysis would likely work 
+best on a plate that has similar to characteristics the Pacific plate: large 
+numbers of significant quakes (magnitude 5.5 or larger), constantly moving, a 
+variety of types of fault zones. Another addition would include adding a data 
+set that classifies the type of fault zone and to run an analysis on how fault 
+zone impacts magnitude. Current geologic knowledge indicates that subduction 
+zones cause the largest quakes; however, the amount of time that earthquakes 
+have been able to be accurately measured is small when compared to the geologic
+timeline and it is possible that a strike-slip fault may also trigger 
+less-frequent major quakes. 
 
 
