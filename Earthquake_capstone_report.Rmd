@@ -720,8 +720,8 @@ regression. Plates that have subduction boundaries have coefficients closest to
 zero while plates with little movement or smaller, transverse boundaries have 
 large coefficients, indicating their lower likelihood of experiencing a major
 tremor. Additionally, we find that the relative and absolute effects of each 
-platein this distribution are minimal, with the majority of values very close to 
-zero. This data again makes sense as the effect each plate would have on the 
+plate in this distribution are minimal, with the majority of values very close 
+to zero. This data again makes sense as the effect each plate would have on the 
 total of major earthquakes would be minimal given the number of tectonic plates. 
  
 However, things get more interesting when applying the binomial distribution to 
@@ -760,5 +760,19 @@ summary(nap_p_model)
 
 exp(coef(nap_p_model))
 ```
+Since the Poisson model works better for data that does not 
+follow a normal distribution, it is clear from the deviance (close to zero) that
+this is the best model for the world earthquake data. Looking at the results of 
+the Poisson models, we see there is a very slight increase in the probability of
+a major earthquake on each plate using this prediction model.
+
+In applying the model to the restricted NAP data set, we again find a very low
+deviance, indicating that this would be a good model for this data set as well.
+The coefficient for the Pacific plate in this model gives a 10% probability of a 
+major earthquake occurring on this plate. 
+
+##Conclusion
+
+
 
 
