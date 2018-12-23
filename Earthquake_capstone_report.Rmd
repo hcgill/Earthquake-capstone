@@ -432,8 +432,8 @@ of the direct value of the focal depth.
 
 ##Interactions between variables
 
-The next step was to directly analyze interactions between pairs of variables. 
-Due to the above graphic exploration, the interactions were analyzed across the 
+After checking for skews, interactions between variables were analyzed. Due to 
+the above graphic exploration, the interactions were analyzed across the 
 entire data set, earthquakes, and across the restricted North American & Pacific
 Plate earthquakes (nap_earthquakes). 
 
@@ -536,15 +536,15 @@ summary(LRModel9)
 ```
 
 Going through the results of the linear regressions, the first thing that is 
-noticed is the lack of symmetry in residual values, indicating that predicted 
-magnitudes are not close to actual magnitudes. The next thing that draws the 
-attention from this model is the coeffictients vary substantially in value, 
-particularly in the models that include individual tectonic plates (PlateName). 
-Next, it is clear that for many of the models, the variables produce a t-value 
-that is close to zero, demonstrating that the linear regression model does not 
-show a linear relationship between the variables. Lastly, when looking at the 
-R-squared values, it is clear that as all models are close to zero, this method 
-of machine learning is not the best option for this data set. 
+noticed is that the data does not follow a normal distribution. The next thing 
+that draws attention from this model is the coeffictients vary substantially in 
+value, particularly in the models that include individual tectonic plates 
+(PlateName). Next, it is clear that for many of the models, the variables 
+produce a t-value that is close to zero, demonstrating that the linear 
+regression model does not show a linear relationship between the variables. 
+Lastly, when looking at the R-squared values, it is clear that as all models are 
+close to zero, this method of machine learning is not the best option for this 
+data set. 
 
 
 #Logistic Regression
@@ -593,19 +593,20 @@ summary(QuakeLog4)
 car::Anova(QuakeLog4)
 
 
-
-
 ```
  
 Reviewing the models for logistic regression for all earthquakes, it becomes 
 clear that a logistic regression does not accurately predict magnitude for 
-earthquakes. In these results, the deviance values are all quite large (6000+) 
-as are the AIC values (also 6000+). Additionally, the p values in the chi square 
-test all have a value of 1, indicating that the logistic regression is not a 
-good model for this data. 
+earthquakes. However, from comparing the outcomes of each Anova test, we find 
+longitude to be highly significant in determining whether an earthquakes will 
+have a magnitude of 7.0 or above. The tests also reveal focal depth and plate 
+name to be fairly significant predictors. These results again make sense as the
+plate location of a quake would determine the magnitude of the tremor; for
+example,a quake that occurs on the Pacific plate is more likely to be a major 
+quake than a tremor on the eurasian plate as the Pacific plate is prone to 
+sudden, sharp movements found only in subduction zones.
 
-However, as both the full data set and restricted data set are being tested, the
-same process was applied to nap_earthquakes. 
+This process was then repeated by restricting the plates to the NAP plate data.
 
 ```{r}
 #Create binomial column for major earthquake classification for NAP data
@@ -645,7 +646,7 @@ car::Anova(NapQuakeLog4)
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
-car::Anova(NapQuakeog5)
+car::Anova(NapQuakeLog5)
 
 
 
@@ -663,8 +664,16 @@ Looking at the results of the logistic regression for the North American and
 Pacific plates, it is clear that a logistic regression model better fits this
 restricted data set rather than the entire earthquakes set. The deviances are 
 1/10 of the values found in the larger set: deviances hover around 600 as do AIC
-value. Still, there is likely a better model for this, as the p values of 1 
-indicate that these models are not better than the null model. 
+values, indicating that this is a better fit than when the model is applied to 
+all earthquake data. 
+
+Interestingly, when Anova is run across each of the NAP models, we find that
+focal depth of the earthquake becomes the most significant predictor of when an 
+earthquake's magnitude will exceed 7.0 on the Richter scale. This may be due to 
+the earth settling after a large subduction event, leading to a shallower focal
+point. 
+
+
 
 ##Binomial distributions
 
@@ -705,17 +714,28 @@ plogis(-2.82138 + coef(nap_model)) #absolute effects
 
 ```
 
- From the binomial regression of all earthquakes, it is clear to see that this 
- model is a better fit than either the linear reression or the logistic 
- regression. Plates that have subduction boundaries have coefficients closest to
- zero while plates with little movement or smaller, transverse boundaries have 
- large coefficients, indicating their lower likelihood of experiencing a major
- tremor. 
+From the binomial regression of all earthquakes, it is clear to see that this 
+model is a better fit than either the linear reression or the logistic 
+regression. Plates that have subduction boundaries have coefficients closest to
+zero while plates with little movement or smaller, transverse boundaries have 
+large coefficients, indicating their lower likelihood of experiencing a major
+tremor. Additionally, we find that the relative and absolute effects of each 
+platein this distribution are minimal, with the majority of values very close to 
+zero. This data again makes sense as the effect each plate would have on the 
+total of major earthquakes would be minimal given the number of tectonic plates. 
  
 However, things get more interesting when applying the binomial distribution to 
 the North American/Pacific plates. In this model, the residual deviance is 
-extremely low, indicating that this plate has a higher probability of 
-experiencing a major earthquake. 
+extremely low, indicating that this model is a good fit for the data (as opposed
+to the binomial regression for the full earthquake data, which had a high 
+deviance). When the relative and absolute effects of this model were calculated, 
+they were shown to be more significant than the model for all earthquakes; the 
+relative effects returned a coefficient of 1.02 while the absolute effect
+returned a coefficient of 0.06. These values reinforce the concept that a more 
+active plate, such as the Pacific plate, would have a higher impact on the total
+of major earthquakes than a less active plate, such as the North American plate
+(which usually only experiences major tremors as a result of the Pacific plate 
+subducting under it, causing the North American plate to be pushed up).
 
 
 ##Poisson Models
