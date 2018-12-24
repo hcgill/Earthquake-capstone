@@ -12,6 +12,16 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+##The Problem
+
+One of the biggest problems that exists in geology involves the prediction of 
+significant earthquakes. Earthquakes can be measured in several ways, but a 
+significant earthquake is a tremor that measures 5.5 or higher on the Richter 
+scale. Predicting such earthquakes is important as significant earthquakes often
+cause significant damage to infrastructure and loss of life.Ideally, a solution 
+could be found using data to predict the probability of occurance of a 
+significant earthquake for a given location. 
+
 ## Data Sources
 
 Two data sets were used in this analysis. The first data set, 
