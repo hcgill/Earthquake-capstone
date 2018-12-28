@@ -76,8 +76,8 @@ signif_earthquakes <- select(signif_earthquakes, "YEAR", "MONTH", "DAY", "HOUR",
 signif_earthquakes <- setNames(signif_earthquakes, 
                                tolower(names(signif_earthquakes)))
 
-#Select data from 1935 to present
-signif_earthquakes <- filter(signif_earthquakes, year > 1934)
+#Select data from 1965 to present
+signif_earthquakes <- filter(signif_earthquakes, year > 1964)
 
 #Remove any magnitude values that are NA 
 #(indicates a recorded earthquake with no measurement)
@@ -217,6 +217,22 @@ earthquakes <- as.data.frame(earthquakes)
 
 head(earthquakes)
 ```
+
+To aid in analysis, the date column was separated into year, month, and day. The
+outliers were then filtered out of the data sets (incomplete data for 2017 and
+2018). 
+
+```{r}
+#separate date column into year, month, and day
+earthquakes <- separate(earthquakes, date, into = c("year", "month", "day"))
+
+#Filter outliers (1 earthquake recorded in 2017, 2018)
+earthquakes <- filter(earthquakes, year < 2017)
+earthquakes <- filter(earthquakes, magnitude > 5.5)
+
+head(earthquakes)
+```
+
 
 ##Initial Exploration of Data
 
