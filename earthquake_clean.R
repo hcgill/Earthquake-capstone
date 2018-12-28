@@ -35,7 +35,7 @@ signif_earthquakes <- select(signif_earthquakes, "YEAR", "MONTH", "DAY", "HOUR",
 signif_earthquakes <- setNames(signif_earthquakes, 
                                tolower(names(signif_earthquakes)))
 
-#Select data from 1935 to present
+#Select data from 1965 to present
 signif_earthquakes <- filter(signif_earthquakes, year > 1964)
 
 #Remove any magnitude values that are NA 
