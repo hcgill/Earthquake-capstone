@@ -3,8 +3,8 @@ title: "Earthquake_Capstone_Report"
 author: "H. Ewton"
 date: "9/28/2018"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
   html_document: default
 ---
 
@@ -432,6 +432,10 @@ set.
 ##Checking for skew of variables
 
 ```{r}
+#Unite month, day, year columns
+earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), 
+                      sep = "-")
+
 hist(earthquakes$focal_depth)
 hist(log1p(earthquakes$focal_depth))
 
