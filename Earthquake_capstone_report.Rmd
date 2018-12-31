@@ -3,34 +3,45 @@ title: "Earthquake_Capstone_Report"
 author: "H. Ewton"
 date: "9/28/2018"
 output:
-  pdf_document: default
   word_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##The Problem
+#The Problem
 
 One of the biggest problems that exists in geology involves the prediction of 
 significant earthquakes. Earthquakes can be measured in several ways, but a 
 significant earthquake is a tremor that measures 5.5 or higher on the Richter 
-scale. Predicting such earthquakes is important as significant earthquakes often
-cause significant damage to infrastructure and loss of life.Ideally, a solution 
-could be found using data to predict the probability of occurance of a 
+scale. Predicting such earthquakes is important as higher magnitude earthquakes
+often cause significant damage to infrastructure and loss of life. Ideally, a 
+solution could be found using data to predict the probability of occurance of a 
 significant earthquake for a given location. 
 
-## Data Sources
+To solve this problem, a significant amount of data would be needed to enable
+the creation of a probability prediction. The data would not only need to have
+all earthquakes registering above a 5.5 magnitude, but would also need the date
+the earthquake occurred, the geographical location (latitude/longitude), the 
+focal depth of the quake (the origin of the tremor), and the plate that the 
+tremor occurred on/along. This data would then be analyzed first for trends, 
+then used to predict the probability of an earthquake occurring on each plate.
 
+#Methods
+
+
+##Data Sources
 Two data sets were used in this analysis. The first data set, 
 signif_earthquakes, was obtained from NOAA's Significant Earthquakes Database 
-(<https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1>) and lists every 
+(https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1) and lists every 
 recorded earthquake in history back to 2150 BC. The other data set used, 
 USGS_df, was obtained from Kaggle 
-(<https://www.kaggle.com/usgs/earthquake-database#database.csv>) and lists all 
+(https://www.kaggle.com/usgs/earthquake-database#database.csv) and lists all 
 recorded major earthquakes in the USGS data base from 1965 to 2016. 
+
 
 ## signif_earthquakes clean-up
 This file, signif_earthquakes, presented several challenges. The file first
@@ -123,7 +134,7 @@ colnames(USGS_df)[5] <- "focal_depth"
 ```
 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Print head(USGS_df)
 head(USGS_df)
 ```
@@ -167,7 +178,7 @@ head(signif_earthquakes)
 Once the two tables were in the correct formats, full_join was used to 
 consolidate the data into one data frame: 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Join tables together via date, time, latitude, and longitude
 earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time", 
                                                              "latitude", 
@@ -184,7 +195,7 @@ connecting a series of coordinates. This file was uploaded and read using the
 geojsonio package. Once loaded, the earthquakes data set was overlaid onto the 
 plate boundaries data set. 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 
 # Import data for tectonic plate boundaries
 plate_data <- "PB2002_plates.json"
@@ -206,7 +217,7 @@ The final step in tidying the data was to combine the columns from the two
 resulting tables and save the new result as a data frame. This gives us the 
 following result: 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 # Attach the resulting columns that we got from over to the rows of eqs
 earthquakes$LAYER <- earthquakes_plates$LAYER
 earthquakes$Code <- earthquakes_plates$Code
@@ -222,7 +233,7 @@ To aid in analysis, the date column was separated into year, month, and day. The
 outliers were then filtered out of the data sets (incomplete data for 2017 and
 2018). 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #separate date column into year, month, and day
 earthquakes <- separate(earthquakes, date, into = c("year", "month", "day"))
 
@@ -234,7 +245,7 @@ head(earthquakes)
 ```
 
 
-##Initial Exploration of Data
+##Exploratory Data Analysis
 
 After combining the data sets, an initial exploration was completed to identify 
 any possible trends. Using the earthquakes, data set, a bar graph was created
@@ -340,7 +351,7 @@ other seismic events, such as the ones recorded in arkansas, virginia, and the
 gulf of mexico, may be caused by human activity. As a result, the focus is on 
 major earthquakes occurring at plate boundaries. 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Earthquakes from 2006-2016
 earthquakes2006_2016 <- filter(earthquakes, year > 2005)
 
@@ -367,7 +378,7 @@ a pattern was the North American and the Pacific plates. These two plates were
 combined because as the Pacific plate subducts under the North American plate, 
 the seismic events are recorded on the North American plate. 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Filter for North American and Pacific plate earthquakes
 nap_earthquakes <- filter(earthquakes, PlateName == c("North America", 
                                                       "Pacific"))
@@ -431,7 +442,7 @@ set.
 
 ##Checking for skew of variables
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Unite month, day, year columns
 earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), 
                       sep = "-")
@@ -467,7 +478,7 @@ the above graphic exploration, the interactions were analyzed across the
 entire data set, earthquakes, and across the restricted North American & Pacific
 Plate earthquakes (nap_earthquakes). 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 ##Interactions between variables
 
 
@@ -519,7 +530,7 @@ As was discovered earlier, there are multiple variables that can impact an
 earthquake's magnitude. Due to this, multiple linear regression was used to 
 attempt to find if there is a linear relationship between the variables. 
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 
 #Unite month, day, year columns
 earthquakes1 <- unite(earthquakes, quake_date, c("year", "month", "day"), 
@@ -579,7 +590,7 @@ data set.
 
 #Logistic Regression
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Create binomial column for major earthquake classification
 
 earthquakes1$MajorEarthquakes = ifelse(earthquakes1$magnitude >= 7.0, 1, 0)
@@ -638,7 +649,7 @@ sudden, sharp movements found only in subduction zones.
 
 This process was then repeated by restricting the plates to the NAP plate data.
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 #Create binomial column for major earthquake classification for NAP data
 
 nap_earthquakes$MajorEarthquakes = 
@@ -707,7 +718,7 @@ point.
 
 ##Binomial distributions
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 
 #binomial distribution for earthquakes1
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
@@ -770,7 +781,7 @@ subducting under it, causing the North American plate to be pushed up).
 
 ##Poisson Models
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 
 #Poisson distribution for earthquakes1
 
