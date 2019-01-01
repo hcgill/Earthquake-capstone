@@ -12,6 +12,27 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+#Table of Contents
+Problem
+Methods
+- Data Sources
+- Signif_earthquakes clean-up
+- USGS_df clean-up
+- Joining the data frames
+- Adding plate information
+- Exploratory Data Analysis
+- Geographic plots (Maps)
+- Creation of NAP data set
+- Checking for skew of variables
+- Interactions between variables
+Predictive Models
+- Linear Regression
+- Logistic Regression
+- Binomial Distribution
+- Poisson Model
+Conclusion
+
+
 #The Problem
 
 One of the biggest problems that exists in geology involves the prediction of 
@@ -33,7 +54,7 @@ then used to predict the probability of an earthquake occurring on each plate.
 #Methods
 
 
-##Data Sources
+###Data Sources
 Three data sets were used in this analysis. The first data set, 
 signif_earthquakes, was obtained from NOAA's Significant Earthquakes Database 
 (https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1) and lists every 
@@ -46,7 +67,7 @@ longitude points to a tectonic plate
 (https://github.com/fraxen/tectonicplates/tree/master/GeoJSON).
 
 
-## signif_earthquakes clean-up
+###Signif_earthquakes clean-up
 This file, signif_earthquakes, presented several challenges. After removing 
 observations with missing magnitude values and data with estimated magnitude 
 (pre-1935), the data was filtered to only include relevant columns: date, time,
@@ -65,6 +86,7 @@ library(maps)
 library(ggthemes)
 library(gganimate)
 library(caTools)
+library(multcomp)
 
 #Import data from NOAA on significant earthquakes in recorded geologic history
 signif_earthquakes <- read_delim("signif (3).txt", 
@@ -75,10 +97,10 @@ signif_earthquakes <- as.data.frame(signif_earthquakes,
                                     stringsAsFactors = FALSE)
 
 #Select relevant headings
-signif_earthquakes <- select(signif_earthquakes, "YEAR", "MONTH", "DAY", "HOUR",
-                             "MINUTE", "SECOND", "FOCAL_DEPTH", "EQ_MAG_UNK", 
-                             "COUNTRY", "LOCATION_NAME", "LATITUDE", 
-                             "LONGITUDE")
+signif_earthquakes <- dplyr::select(signif_earthquakes, "YEAR", "MONTH", "DAY", 
+                                    "HOUR","MINUTE", "SECOND", "FOCAL_DEPTH",
+                                    "EQ_MAG_UNK",  "COUNTRY", "LOCATION_NAME", 
+                                    "LATITUDE", "LONGITUDE")
 
 #Change headings to lowercase
 signif_earthquakes <- setNames(signif_earthquakes, 
@@ -98,7 +120,7 @@ head(signif_earthquakes)
 ```
 
   
-## USGS_df Clean-up
+### USGS_df Clean-up
 
 The next step in the cleaning of data was to address the USGS data set from 
 Kaggle. Like signif_earthquakes, the columns relevant to this analysis first had
@@ -117,8 +139,8 @@ USGS_earthquakes <- read_csv("database.csv")
 USGS_df <- as.data.frame(USGS_earthquakes)
 
 #Select relevant headings
-USGS_df <- select(USGS_df, "Date", "Time", "Latitude", "Longitude", "Depth", 
-                  "Magnitude")
+USGS_df <- dplyr::select(USGS_df, "Date", "Time", "Latitude", "Longitude", 
+                         "Depth", "Magnitude")
 
 #Set column headings to lowercase
 USGS_df <- setNames(USGS_df, tolower(names(USGS_df)))
@@ -136,7 +158,7 @@ colnames(USGS_df)[5] <- "focal_depth"
 head(USGS_df)
 ```
 
-## Joining the data frames   
+### Joining the data frames   
 
 
 To best join the data frames together without losing data, a full_join function 
@@ -173,7 +195,7 @@ earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time",
 summary(earthquakes)
 ```
 
-##Adding plate information
+###Adding plate information
 
 Once the data set was created, one more bit of information was needed for 
 analysis- the tectonic plate data. Stored as a JSON file, this data set 
@@ -218,7 +240,7 @@ head(earthquakes)
 ```
 
 
-##Exploratory Data Analysis
+###Exploratory Data Analysis
 
 After combining the data sets, an initial exploration was completed to identify 
 any possible trends. Using the earthquakes, data set, a bar graph was created
@@ -272,7 +294,7 @@ ggplot(earthquakes, aes(x = PlateName, y = magnitude)) +
 ```
 
 
-#Using a map to plot data
+###Geographic Plots
 The next step taken in the data exploration was to plot the earthquake 
 occurences on a world map. Once the map of the tectonic plates was established, 
 the earthquakes were then charted by year to see if there was a recognizable 
@@ -349,7 +371,7 @@ decade_map <- world +
 plot(decade_map)
 ```
 
-##Narrowing the data
+###Creation of NAP data set
 
 The next step in the data exploration was to narrow the data. This was done by
 restricting the data to just one or two plates and repeating the bar graph and 
@@ -421,10 +443,10 @@ nap_animated_map <- world +
   labs(size = 'magnitude', color = 'Plate Name') +
   theme(legend.position = "right")
 
-gganimate::gg_animate(nap_animated_map)
+#gganimate::gg_animate(nap_animated_map)
 ```
 
-##Checking for skew of variables
+###Checking for skew of variables
 
 After looking at the data and narrowing down interactions to the Pacific and 
 North American tectonic plates, the next step was to look for interactions 
@@ -455,7 +477,7 @@ median(earthquakes1$magnitude)
 ```
 
 
-##Interactions between variables
+###Interactions between variables
 
 After checking for skew, interactions between variables were analyzed across the 
 entire data set, earthquakes, and across the restricted North American/Pacific
@@ -502,10 +524,17 @@ to attempt to better predict the magnitude of major earthquakes. The models that
 were used included linear regression, logistic regression, binomial 
 regressions, and the Poisson model. 
 
-##Linear Regression
+###Linear Regression
+
 As was discovered earlier, there are multiple variables that can impact an 
 earthquake's magnitude. Due to this, multiple linear regression was used to 
 attempt to find if there is a linear relationship between the variables. 
+However, after completing the linear regressions, it was determined this model
+is not successful in predicting the probability of earthquakes as it does not
+follow a normal distribution, the coefficients vary substantially in value, and 
+the variables produce a t-value that is close to zero, indicating that there is 
+not a linear relationship between variables. 
+
 
 ```{r, echo = FALSE, include = FALSE}
 
@@ -553,19 +582,9 @@ LRModel9 <-lm(magnitude ~ latitude * longitude * log1p(focal_depth) * PlateName,
 summary(LRModel9)
 ```
 
-Going through the results of the linear regressions, the first thing that is 
-noticed is that the data does not follow a normal distribution. The next thing 
-that draws attention from this model is the coeffictients vary substantially in 
-value, particularly in the models that include individual tectonic plates 
-(PlateName). Next, it is clear that for many of the models, the variables 
-produce a t-value that is close to zero, demonstrating that the linear 
-regression model does not show a linear relationship between the variables. 
-Lastly, when looking at the R-squared values, it is clear that as all models are 
-close to zero, this method of machine learning is not the best option for this 
-data set. 
 
 
-#Logistic Regression
+###Logistic Regression
 
 ```{r, echo = FALSE, include = FALSE}
 #Create binomial column for major earthquake classification
@@ -585,38 +604,41 @@ table(earthquakes1$MajorEarthquakes)
 # Logistic Regression Models ----------------------------------------------
 
 
-QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) ,
-                data = earthquakes1, family = binomial)
+QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) +
+                   PlateName, data = earthquakes1, family = binomial)
 summary(QuakeLog1)
-car::Anova(QuakeLog1)
+knitr::kable(car::Anova(QuakeLog1))
+
 
 
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
-                data = earthquakes1, family = binomial)
+                 data = earthquakes1, family = binomial)
 summary(QuakeLog2)
-car::Anova(QuakeLog2)
+knitr::kable(car::Anova(QuakeLog2))
+
+
 
 
 
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
-                family = binomial)
+                 family = binomial)
 summary(QuakeLog3)
-car::Anova(QuakeLog3)
+knitr::kable(car::Anova(QuakeLog3))
 
 
 
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
-                family = binomial)
+                 family = binomial)
 summary(QuakeLog4)
-car::Anova(QuakeLog4)
+knitr::kable(car::Anova(QuakeLog4))
 
 
 ```
  
 Reviewing the models for logistic regression for all earthquakes, it becomes 
 clear that a logistic regression does not accurately predict magnitude for 
-earthquakes. However, from comparing the outcomes of each Anova test, we find 
-longitude to be highly significant in determining whether an earthquakes will 
+earthquakes. However, from the Wald Type II Chi-sq test, we find longitude to be 
+highly significant in determining whether an earthquakes will 
 have a magnitude of 7.0 or above. The tests also reveal focal depth and plate 
 name to be fairly significant predictors. These results again make sense as the
 plate location of a quake would determine the magnitude of the tremor; for
@@ -642,29 +664,30 @@ table(nap_earthquakes$MajorEarthquakes)
 #null model is 0.05679513
 
 NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
-                   data = nap_earthquakes, family = binomial)
+                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
-car::Anova(NapQuakeLog1)
+knitr::kable(car::Anova(NapQuakeLog1))
+
 
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
-car::Anova(NapQuakeLog2)
+knitr::kable(car::Anova(NapQuakeLog2))
 
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
-car::Anova(NapQuakeLog3)
+knitr::kable(car::Anova(NapQuakeLog3))
 
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
-car::Anova(NapQuakeLog4)
+knitr::kable(car::Anova(NapQuakeLog4))
 
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
-car::Anova(NapQuakeLog5)
+knitr::kable(car::Anova(NapQuakeLog5))
 
 
 
@@ -687,13 +710,11 @@ all earthquake data.
 
 Interestingly, when Anova is run across each of the NAP models, we find that
 focal depth of the earthquake becomes the most significant predictor of when an 
-earthquake's magnitude will exceed 7.0 on the Richter scale. This may be due to 
-the earth settling after a large subduction event, leading to a shallower focal
-point. 
+earthquake's magnitude will exceed 7.0 on the Richter scale.
 
 
 
-##Binomial distributions
+###Binomial distributions
 
 ```{r, echo = FALSE, include = FALSE}
 
@@ -756,7 +777,7 @@ of major earthquakes than a less active plate, such as the North American plate
 subducting under it, causing the North American plate to be pushed up).
 
 
-##Poisson Models
+###Poisson Models
 
 ```{r, echo = FALSE, include = FALSE}
 
@@ -789,7 +810,7 @@ deviance, indicating that this would be a good model for this data set as well.
 The coefficient for the Pacific plate in this model gives a 10% probability of a 
 major earthquake occurring on this plate. 
 
-##Conclusion
+#Conclusion
 
 After gathering and analyzing two data sets covering global earthquakes with a
 magnitude of 5.5 or higher (as measured by the Richter scale), a relationship 
@@ -798,9 +819,11 @@ focal depth. Given what is known about earthquakes, this information is not
 surprising as subduction zones often occur along the longitudinal lines that
 create a border along the Pacifc tectonic plate, a part of the Ring of Fire. 
 
-Out of the four types of models created, the best model was the Poisson model. 
-The Poisson model gave the probability of occurance of a tremor with a magnitude 
-of 7.0 or greater, depending on the tectonic plate location. However, even with 
+Out of the four types of models created, the most successful models were the 
+Binomial disribution and the Poisson model. The binomial distribution was able 
+to predict the probability of a major quake occurring on a given plate while the 
+Poisson model predicted the number of tremors with a magnitude of 7.0 or 
+greater, depending on the tectonic plate location. However, even with 
 this probability, there is significant room to improve the possibility of 
 earthquake prediction, as the Poisson model does not indicate where the quake 
 may occur. 
@@ -821,3 +844,4 @@ less-frequent major quakes. The last addition would be a mixed effects model
 where the data would be analyzed to attempt to establish any possible patterns
 that may exist between subgroups of data (such as plate location). 
 
+#References
