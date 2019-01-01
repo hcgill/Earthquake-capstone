@@ -235,7 +235,7 @@ earthquakes <- filter(earthquakes, year < 2017)
 earthquakes <- filter(earthquakes, magnitude > 5.5)
 ```
 
-```{r, echo = TRUE}
+```{r, echo = FALSE}
 head(earthquakes)
 ```
 
@@ -249,7 +249,7 @@ the following results, with a trend of an increasing number of earthquakes
 worldwide. A peak number of earthquakes appears in 2011, which had nearly 100 
 more significant earthquakes than any other year in recorded seismic history. 
 
-```{r}
+```{r, echo=FALSE}
 
 #Bar graph of year vs # of major earthquakes (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
@@ -265,7 +265,7 @@ a 9.0 magnitude appeared in both 2004 and 2011. However, as the data reveals,
 although there were more earthquakes in 2011, the majority of the earthquakes 
 were within the 5.5 to 6.5 magnitude range. 
 
-```{r, echo = FALSE, include= FALSE}
+```{r, echo = FALSE}
 #Boxplot of Year vs. Magnitude
 ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
@@ -283,7 +283,7 @@ plates that have extreme outliers (India, Burma, North America, Okhotsk) are
 plates that sit on top of convergent subduction zones, where pressure would 
 built until one plate slips under the other, creating a large seismic event. 
 
-```{r, echo = FALSE, include= FALSE}
+```{r, echo = FALSE}
 
 #Boxplot of Plate name vs magnitude
 ggplot(earthquakes, aes(x = PlateName, y = magnitude)) + 
@@ -316,7 +316,7 @@ plate_map <- world +
 ```
 
 
-```{r}
+```{r, echo = FALSE}
 plot(plate_map)
 ```
 
@@ -332,7 +332,7 @@ year_map <- world +
 ```
 
 
-```{r}
+```{r, echo = FALSE}
 plot(year_map)
 ```
 
@@ -367,7 +367,7 @@ decade_map <- world +
   theme(legend.position = "right")
 ```
 
-```{r}
+```{r, echo = FALSE}
 plot(decade_map)
 ```
 
@@ -391,7 +391,7 @@ nap_earthquakes <- filter(earthquakes, PlateName == c("North America",
                                                       "Pacific"))
 ```
 
-```{r}
+```{r, echo = FALSE}
 #Bar graph of year vs # of major earthquakes (1965-2016)
 ggplot(nap_earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
@@ -400,7 +400,7 @@ ggplot(nap_earthquakes, aes(factor(year))) +
   ggtitle("Number of Major Earthquakes/Year on N. American & Pacific plates")
 ```
 
-```{r}
+```{r, echo = FALSE}
 #Boxplot of year vs magnitude on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
@@ -484,7 +484,7 @@ entire data set, earthquakes, and across the restricted North American/Pacific
 Plate earthquakes (nap_earthquakes). From the pairs analysis, there appears to
 be an interaction between longitude and focal depth.
 
-```{r, echo = FALSE, include = FALSE}
+```{r, echo = FALSE}
 ##Interactions between variables
 
 
@@ -607,32 +607,43 @@ table(earthquakes1$MajorEarthquakes)
 QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) +
                    PlateName, data = earthquakes1, family = binomial)
 summary(QuakeLog1)
+```
+
+```{r, echo = FALSE}
 knitr::kable(car::Anova(QuakeLog1))
+```
 
 
-
+```{r, echo=FALSE, include=FALSE}
 QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                  data = earthquakes1, family = binomial)
 summary(QuakeLog2)
+```
+
+```{r, echo=FALSE}
 knitr::kable(car::Anova(QuakeLog2))
+```
 
 
-
-
-
+```{r, echo=FALSE, include=FALSE}
 QuakeLog3 <- glm(MajorEarthquakes ~ log1p(focal_depth), data = earthquakes1, 
                  family = binomial)
 summary(QuakeLog3)
+```
+
+```{r, echo=FALSE}
 knitr::kable(car::Anova(QuakeLog3))
+```
 
 
-
+```{r, echo=FALSE, include=FALSE}
 QuakeLog4 <- glm(MajorEarthquakes ~ latitude * longitude, data = earthquakes1, 
                  family = binomial)
 summary(QuakeLog4)
+```
+
+```{r, echo = FALSE}
 knitr::kable(car::Anova(QuakeLog4))
-
-
 ```
  
 Reviewing the models for logistic regression for all earthquakes, it becomes 
@@ -666,31 +677,55 @@ table(nap_earthquakes$MajorEarthquakes)
 NapQuakeLog1 <- glm(MajorEarthquakes ~ latitude * longitude, 
                     data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog1)
+```
+
+```{r, echo = FALSE}
 knitr::kable(car::Anova(NapQuakeLog1))
+```
 
-
+```{r, echo=FALSE, include=FALSE}
 NapQuakeLog2 <-glm(MajorEarthquakes ~ latitude * longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog2)
-knitr::kable(car::Anova(NapQuakeLog2))
+```
 
+```{r, echo=FALSE}
+knitr::kable(car::Anova(NapQuakeLog2))
+```
+
+```{r, echo=FALSE, include=FALSE}
 NapQuakeLog3 <-glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog3)
-knitr::kable(car::Anova(NapQuakeLog3))
+```
 
+```{r, echo = FALSE}
+knitr::kable(car::Anova(NapQuakeLog3))
+```
+
+
+```{r, echo=FALSE, include=FALSE}
 NapQuakeLog4 <-glm(MajorEarthquakes ~ longitude * log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog4)
-knitr::kable(car::Anova(NapQuakeLog4))
+```
 
+```{r, echo=FALSE}
+knitr::kable(car::Anova(NapQuakeLog4))
+```
+
+```{r, echo=FALSE, include=FALSE}
 NapQuakeLog5 <-glm(MajorEarthquakes ~ log1p(focal_depth), 
                    data = nap_earthquakes, family = binomial)
 summary(NapQuakeLog5)
+```
+
+```{r, echo = FALSE}
 knitr::kable(car::Anova(NapQuakeLog5))
+```
 
 
-
+```{r, echo=FALSE, include=FALSE}
 #Predicting using the best model(NapQuakeLog4)
 
 predictTrain = predict(NapQuakeLog4, type = "response")
@@ -708,7 +743,7 @@ restricted data set rather than the entire earthquakes set. The deviances are
 values, indicating that this is a better fit than when the model is applied to 
 all earthquake data. 
 
-Interestingly, when Anova is run across each of the NAP models, we find that
+Interestingly, when the Wald type II test is run across each of the NAP models,
 focal depth of the earthquake becomes the most significant predictor of when an 
 earthquake's magnitude will exceed 7.0 on the Richter scale.
 
@@ -716,7 +751,7 @@ earthquake's magnitude will exceed 7.0 on the Richter scale.
 
 ###Binomial distributions
 
-```{r, echo = FALSE, include = FALSE}
+```{r, echo = FALSE, include= FALSE}
 
 #binomial distribution for earthquakes1
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
@@ -726,15 +761,18 @@ bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family=binomial("logit"), data=eq_agg_df)
 
 summary(bd_model)
+```
 
+```{r, echo=FALSE}
 #measuring relative & absolute effects of binomial distributions
 
 exp(coef(bd_model))  #relative effects
 
 plogis(-3.773)
 plogis(-3.773 + coef(bd_model)) #absolute effects
+```
 
-
+```{r, echo=FALSE, include=FALSE}
 #binomial distribution for nap_earthquakes
 eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
@@ -743,43 +781,30 @@ nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
     family = binomial("logit"), data = eq_agg_df_nap)
 
 summary(nap_model)
+```
 
+```{r, echo=FALSE}
 #measuring relative & absolute effects of binomial distributions for nap data
 
 exp(coef(nap_model))  #relative effects
 
 plogis(-2.82138)
 plogis(-2.82138 + coef(nap_model)) #absolute effects
-
 ```
 
 From the binomial regression of all earthquakes, it is clear to see that this 
-model is a better fit than either the linear reression or the logistic 
-regression. Plates that have subduction boundaries have coefficients closest to
+model is successful in predicting probability of a major quake depending on the 
+plate. Plates that have subduction boundaries have coefficients closest to
 zero while plates with little movement or smaller, transverse boundaries have 
 large coefficients, indicating their lower likelihood of experiencing a major
 tremor. Additionally, we find that the relative and absolute effects of each 
 plate in this distribution are minimal, with the majority of values very close 
-to zero. This data again makes sense as the effect each plate would have on the 
-total of major earthquakes would be minimal given the number of tectonic plates. 
- 
-However, things get more interesting when applying the binomial distribution to 
-the North American/Pacific plates. In this model, the residual deviance is 
-extremely low, indicating that this model is a good fit for the data (as opposed
-to the binomial regression for the full earthquake data, which had a high 
-deviance). When the relative and absolute effects of this model were calculated, 
-they were shown to be more significant than the model for all earthquakes; the 
-relative effects returned a coefficient of 1.02 while the absolute effect
-returned a coefficient of 0.06. These values reinforce the concept that a more 
-active plate, such as the Pacific plate, would have a higher impact on the total
-of major earthquakes than a less active plate, such as the North American plate
-(which usually only experiences major tremors as a result of the Pacific plate 
-subducting under it, causing the North American plate to be pushed up).
+to zero. 
 
 
 ###Poisson Models
 
-```{r, echo = FALSE, include = FALSE}
+```{r, echo = FALSE}
 
 #Poisson distribution for earthquakes1
 
@@ -799,16 +824,8 @@ summary(nap_p_model)
 
 exp(coef(nap_p_model))
 ```
-Since the Poisson model works better for data that does not 
-follow a normal distribution, it is clear from the deviance (close to zero) that
-this is the best model for the world earthquake data. Looking at the results of 
-the Poisson models, we see there is a very slight increase in the probability of
-a major earthquake on each plate using this prediction model.
 
-In applying the model to the restricted NAP data set, we again find a very low
-deviance, indicating that this would be a good model for this data set as well.
-The coefficient for the Pacific plate in this model gives a 10% probability of a 
-major earthquake occurring on this plate. 
+
 
 #Conclusion
 
