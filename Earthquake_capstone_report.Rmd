@@ -34,26 +34,23 @@ then used to predict the probability of an earthquake occurring on each plate.
 
 
 ##Data Sources
-Two data sets were used in this analysis. The first data set, 
+Three data sets were used in this analysis. The first data set, 
 signif_earthquakes, was obtained from NOAA's Significant Earthquakes Database 
 (https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1) and lists every 
 recorded earthquake in history back to 2150 BC. The other data set used, 
 USGS_df, was obtained from Kaggle 
 (https://www.kaggle.com/usgs/earthquake-database#database.csv) and lists all 
 recorded major earthquakes in the USGS data base from 1965 to 2016. 
+Additionally, a map of tectonic plate points was used to assign the latitude and
+longitude points to a tectonic plate 
+(https://github.com/fraxen/tectonicplates/tree/master/GeoJSON).
 
 
 ## signif_earthquakes clean-up
-This file, signif_earthquakes, presented several challenges. The file first
-needed to be reduced to only include relevant variables from the original 
-original data set; these relevant columsn included date information, time, 
-magnitude, and location information. Next, the data needed to be filtered to 
-include observations that included reliable magnitude measurements. The chosen 
-measurement scale for this analysis is the Richter scale as it has been shown to
-be reliable and provides substantial amounts of data; therefore, all data prior 
-to the creation and regular use of the Richter scale (1935) was removed. 
-Earthquakes that were documented without a measurement were also filtered and 
-removed from the table. These processes left us with the table below:   
+This file, signif_earthquakes, presented several challenges. After removing 
+observations with missing magnitude values and data with estimated magnitude 
+(pre-1935), the data was filtered to only include relevant columns: date, time,
+magnitude, and location information. 
 
 
 ```{r, echo = FALSE, include = FALSE}
@@ -96,7 +93,7 @@ signif_earthquakes$eq_mag_unk[is.na(signif_earthquakes$eq_mag_unk)] <- 0
 signif_earthquakes <- filter(signif_earthquakes, eq_mag_unk > 0)
 ```
 
-```{r, echo = TRUE}
+```{r, echo = FALSE, include = FALSE}
 head(signif_earthquakes)
 ```
 
@@ -110,7 +107,7 @@ to be extracted. From USGS_df, selected columns were "Date", "Time", "Latitude",
 to complete our data analysis as well as join the columns together.  After 
 selecting the relevant columns, the date column was reformatted to international
 date format and the "depth" column was renamed to "focal_depth" to better 
-indicate what the values represent. The cleaned table for USGS_df appears below:
+indicate what the values represent. 
 
 ```{r, echo = FALSE, include = FALSE}
 #Import data from USGS on earthquakes larger than 5.5 magnitude from 1965-2016
@@ -141,18 +138,10 @@ head(USGS_df)
 
 ## Joining the data frames   
 
-To best join the data frames together without losing data, a full_join function 
-was used. However, for the full_join function to work best, the data from 
-signif_earthquakes needed to be slighly altered to match the format found in 
-USGS_df. This alteration was done by assigning a zero value to time 
-measurements, then by combining hours, minutes, and seconds into one column 
-marked "time" in hh:mm:ss format. This zero value was assigned as some 
-earthuakes were measured in hh:mm and some in hh:mm:ss.   
 
-Another set of columns that needed to be combined in the signif_earthquakes data
-frame were the date columns (month, day, year). These were united into one 
-labelled "date" and put into international date format YYYY-MM-DD. These changes
-led to the new format of the signif_earthquake data frame:  
+To best join the data frames together without losing data, a full_join function 
+was used. In this process, the tables were joined by date, time, latitude, 
+longitude, magnitude, and focal depth of the earthquakes. 
 
 ```{r, echo = FALSE, include = FALSE}
 #Replace NA with zero value in hour, minute, second columns
@@ -173,12 +162,7 @@ signif_earthquakes$time <- hms::as.hms(signif_earthquakes$time)
 colnames(signif_earthquakes)[4] <- "magnitude"
 
 head(signif_earthquakes)
-```
 
-Once the two tables were in the correct formats, full_join was used to 
-consolidate the data into one data frame: 
-
-```{r, echo = FALSE, include = FALSE}
 #Join tables together via date, time, latitude, and longitude
 earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time", 
                                                              "latitude", 
@@ -189,10 +173,12 @@ earthquakes <- full_join(signif_earthquakes, USGS_df, by = c("date", "time",
 summary(earthquakes)
 ```
 
-However, one more data set was needed to complete the analysis. Stored as a 
-JSON file, this data set contained the plate bounddaries of each plate by 
-connecting a series of coordinates. This file was uploaded and read using the 
-geojsonio package. Once loaded, the earthquakes data set was overlaid onto the 
+##Adding plate information
+
+Once the data set was created, one more bit of information was needed for 
+analysis- the tectonic plate data. Stored as a JSON file, this data set 
+contained the plate boundaries of each plate by connecting a series of 
+coordinates. Once loaded, the earthquakes data set was overlaid onto the 
 plate boundaries data set. 
 
 ```{r, echo = FALSE, include = FALSE}
@@ -211,13 +197,7 @@ proj4string(earthquakes) <- proj4string(plates)
 
 # Create overlay
 earthquakes_plates <- over(earthquakes, plates)
-```
 
-The final step in tidying the data was to combine the columns from the two 
-resulting tables and save the new result as a data frame. This gives us the 
-following result: 
-
-```{r, echo = FALSE, include = FALSE}
 # Attach the resulting columns that we got from over to the rows of eqs
 earthquakes$LAYER <- earthquakes_plates$LAYER
 earthquakes$Code <- earthquakes_plates$Code
@@ -225,22 +205,15 @@ earthquakes$PlateName <- earthquakes_plates$PlateName
 
 earthquakes <- as.data.frame(earthquakes)
 
-
-head(earthquakes)
-```
-
-To aid in analysis, the date column was separated into year, month, and day. The
-outliers were then filtered out of the data sets (incomplete data for 2017 and
-2018). 
-
-```{r, echo = FALSE, include = FALSE}
 #separate date column into year, month, and day
 earthquakes <- separate(earthquakes, date, into = c("year", "month", "day"))
 
 #Filter outliers (1 earthquake recorded in 2017, 2018)
 earthquakes <- filter(earthquakes, year < 2017)
 earthquakes <- filter(earthquakes, magnitude > 5.5)
+```
 
+```{r, echo = TRUE}
 head(earthquakes)
 ```
 
@@ -254,7 +227,7 @@ the following results, with a trend of an increasing number of earthquakes
 worldwide. A peak number of earthquakes appears in 2011, which had nearly 100 
 more significant earthquakes than any other year in recorded seismic history. 
 
-```{r, echo = FALSE, include = FALSE}
+```{r}
 
 #Bar graph of year vs # of major earthquakes (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
@@ -278,7 +251,6 @@ ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
         text=element_text(size=9)) +
   ggtitle("Year vs. Magnitude")
 ```
-
 
 
 A boxplot of Plate name vs. magnitude was then created for all earthquakes in 
@@ -319,9 +291,14 @@ plate_map <- world +
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Plate Name') +
   theme(legend.position = "right")
+```
 
+
+```{r}
 plot(plate_map)
+```
 
+```{r, echo = FALSE, include = FALSE}
 #Map earthquake locations by year and magnitude (color = year, size = magnitude)
 year_map <- world +
   geom_point(aes(x = longitude, y = latitude, size = magnitude, color = year), 
@@ -330,9 +307,13 @@ year_map <- world +
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Year') +
   theme(legend.position = "right")
+```
 
+
+```{r}
 plot(year_map)
 ```
+
 As the year plate map revealed, there were many significant earthquakes within 
 the last ten years of the data set. To get a better look at the data, the map 
 was restricted to just the data from 2006 through 2016. When that data was 
@@ -347,8 +328,8 @@ Interestingly, the decade map also picked up increased seismic activity that was
 recorded in the middle of the tectonic plates. Some of this, such as the 
 Hawaiian Islands, can be caused by 'hot spots' or thin, weak areas in the 
 Earth's crust that allow magma to push through, forming a volcano. However, 
-other seismic events, such as the ones recorded in arkansas, virginia, and the 
-gulf of mexico, may be caused by human activity. As a result, the focus is on 
+other seismic events, such as the ones recorded in Arkansas, Virginia, and the 
+Gulf of Mexico, may be caused by human activity. As a result, the focus is on 
 major earthquakes occurring at plate boundaries. 
 
 ```{r, echo = FALSE, include = FALSE}
@@ -362,7 +343,9 @@ decade_map <- world +
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Year') +
   theme(legend.position = "right")
+```
 
+```{r}
 plot(decade_map)
 ```
 
@@ -376,27 +359,35 @@ American Plate, the South American Plate, the Eurasian Plate, and the North
 American and Pacific Plates combined. Of these, the only restricted data to show
 a pattern was the North American and the Pacific plates. These two plates were 
 combined because as the Pacific plate subducts under the North American plate, 
-the seismic events are recorded on the North American plate. 
+the seismic events are recorded on the North American plate. As a result of this
+analysis, the North American/Pacific plate data was isolated and analyzed in 
+addition to the full data set, earthquakes.
 
 ```{r, echo = FALSE, include = FALSE}
 #Filter for North American and Pacific plate earthquakes
 nap_earthquakes <- filter(earthquakes, PlateName == c("North America", 
                                                       "Pacific"))
+```
 
+```{r}
 #Bar graph of year vs # of major earthquakes (1965-2016)
 ggplot(nap_earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
   ggtitle("Number of Major Earthquakes/Year on N. American & Pacific plates")
+```
 
+```{r}
 #Boxplot of year vs magnitude on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
   ggtitle("Year vs Magnitude of earthquakes on N. american and Pacific plates")
+```
 
+```{r, echo=FALSE, include=FALSE}
 #Unite month, day, year columns
 nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"),
                          sep = "-")
@@ -433,14 +424,14 @@ nap_animated_map <- world +
 gganimate::gg_animate(nap_animated_map)
 ```
 
+##Checking for skew of variables
+
 After looking at the data and narrowing down interactions to the Pacific and 
 North American tectonic plates, the next step was to look for interactions 
-between variables. This was done through the following code for both the 
-earthquakes data set as well as the narrowed North American/Pacific (NAP) data 
-set. 
+between variables. During this analysis, it was found that the data for focal
+depth is slightly skewed to the right, so the log1p() function was used to 
+correct this during data analysis.
 
-
-##Checking for skew of variables
 
 ```{r, echo = FALSE, include = FALSE}
 #Unite month, day, year columns
@@ -463,20 +454,13 @@ mean(earthquakes1$magnitude)
 median(earthquakes1$magnitude)
 ```
 
-The next step in the analysis was to check for a skew in the variables; is the 
-data skewed to the left or the right? In this case, it was discovered tha the 
-focal depth was skewed to the right. The magnitude, although already measured on 
-a log scale, was revealed to be minimally skewed to the right. To correct this, 
-the focal depth measurements were adjusted by using log1p(focal_depth) in place 
-of the direct value of the focal depth. 
-
 
 ##Interactions between variables
 
-After checking for skews, interactions between variables were analyzed. Due to 
-the above graphic exploration, the interactions were analyzed across the 
-entire data set, earthquakes, and across the restricted North American & Pacific
-Plate earthquakes (nap_earthquakes). 
+After checking for skew, interactions between variables were analyzed across the 
+entire data set, earthquakes, and across the restricted North American/Pacific
+Plate earthquakes (nap_earthquakes). From the pairs analysis, there appears to
+be an interaction between longitude and focal depth.
 
 ```{r, echo = FALSE, include = FALSE}
 ##Interactions between variables
@@ -510,22 +494,15 @@ pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth),
 ```
 
 
-Given the above interactions, regardless of the data set, the best interaction 
-seems to be between longitude and focal depth of the earthquake. Based on the
-data, these two variables have the most significant impact on the magnitude of a
-major earthquake. This does make sense as many subduction zones run along 
-longitudinal lines and an earthquake close to the surface would have a stronger
-magnitude than one that is deep below the surface and has to travel through many 
-layers of earth prior to reaching the seismographs. 
 
-##Creating predictive models
+#Creating predictive models
 
 After analyzing the above interactions, several predictive models were created 
 to attempt to better predict the magnitude of major earthquakes. The models that
 were used included linear regression, logistic regression, binomial 
 regressions, and the Poisson model. 
 
-#Linear Regression
+##Linear Regression
 As was discovered earlier, there are multiple variables that can impact an 
 earthquake's magnitude. Due to this, multiple linear regression was used to 
 attempt to find if there is a linear relationship between the variables. 
