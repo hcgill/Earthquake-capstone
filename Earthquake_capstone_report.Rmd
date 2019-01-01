@@ -834,16 +834,6 @@ earthquakes while the South American plate comes in with a close 38.5 projected
 major quakes. The Sunda plate, under southeast Asia and western Indonesia is 
 also predicted to experience a large volume of significant tremors, with a 
 predicted 31.5 earthquakes. 
-```{r, echo=FALSE, include=FALSE}
-#Poisson distribution for nap_earthquakes
-
-nap_p_model <- glm(TotalMajor ~ PlateName, family = poisson("log"), 
-                 data = eq_agg_df_nap)
-
-summary(nap_p_model)
-```
-
-
 
 #Conclusion
 
