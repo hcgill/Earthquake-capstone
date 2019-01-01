@@ -879,3 +879,12 @@ less-frequent major quakes. The last addition would be a mixed effects model
 to maximize the data. 
 
 #References
+
+Ahlenius, Hugo. “Fraxen/Tectonicplates.” Tectonicplates/GeoJSON, Github, 2 Oct. 2014, github.com/fraxen/tectonicplates/tree/master/GeoJSON.
+
+National Oceanic and Atmospheric Administration. "NCEI/WDS Global Significant
+Earthquake Database." 10 June 2017.
+https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1
+
+US Geological Survey. “Significant Earthquakes, 1965-2016.” Significant 
+Earthquakes, 1965-2016, 26 Jan. 2017, www.kaggle.com/usgs/earthquake-database.
