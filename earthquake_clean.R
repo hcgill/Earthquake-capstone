@@ -15,6 +15,7 @@ library(caTools)
 library(multcomp)
 
 
+
 # Import NOAA data set ----------------------------------------------------
 
 
@@ -27,9 +28,11 @@ signif_earthquakes <- as.data.frame(signif_earthquakes,
                                     stringsAsFactors = FALSE)
 
 #Select relevant headings
-signif_earthquakes <- select(signif_earthquakes, "YEAR", "MONTH", "DAY", "HOUR",
-                             "MINUTE", "SECOND", "FOCAL_DEPTH", "EQ_MAG_UNK", 
-                             "COUNTRY", "LOCATION_NAME", "LATITUDE", "LONGITUDE")
+signif_earthquakes <- dplyr::select(signif_earthquakes, "YEAR", "MONTH", "DAY", 
+                                    "HOUR","MINUTE", "SECOND", "FOCAL_DEPTH",
+                                    "EQ_MAG_UNK",  "COUNTRY", "LOCATION_NAME", 
+                                    "LATITUDE", "LONGITUDE")
+
 
 #Change headings to lowercase
 signif_earthquakes <- setNames(signif_earthquakes, 
@@ -76,8 +79,8 @@ USGS_earthquakes <- read_csv("database.csv")
 USGS_df <- as.data.frame(USGS_earthquakes)
 
 #Select relevant headings
-USGS_df <- select(USGS_df, "Date", "Time", "Latitude", "Longitude", "Depth",
-                  "Magnitude")
+USGS_df <- dplyr::select(USGS_df, "Date", "Time", "Latitude", "Longitude", 
+                         "Depth", "Magnitude")
 
 #Set column headings to lowercase
 USGS_df <- setNames(USGS_df, tolower(names(USGS_df)))
@@ -731,8 +734,8 @@ tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 eq_agg_df <- earthquakes1 %>% group_by(PlateName) %>%
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName + 
-                  log1p(focal_depth), family=binomial("logit"), data=eq_agg_df)
+bd_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+                family=binomial("logit"), data=eq_agg_df)
 
 summary(bd_model)
 
@@ -748,11 +751,10 @@ plogis(-3.773 + coef(bd_model)) #absolute effects
 eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
   summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName +
-                   log1p(focal_depth), family = binomial("logit"), 
-                 data = eq_agg_df_nap)
+nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName,
+                 family = binomial("logit"), data = eq_agg_df_nap)
 
-summary(nap_model)
+summary(nap_model) #probability of quake
 
 #measuring relative & absolute effects of binomial distributions for nap data
 
@@ -769,21 +771,20 @@ plogis(-2.82138 + coef(nap_model)) #absolute effects
 
 #Poisson distribution for earthquakes1
 
-p_model <- glm(TotalMajor ~ PlateName + log1p(focal_depth), 
-               family=poisson("log"), data=eq_agg_df)
+p_model <- glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
 
 summary(p_model)
 
-exp(coef(p_model))
+exp(coef(p_model)) #counts of earthquakes
 
 
 #Poisson distribution for nap_earthquakes
 
-nap_p_model <- glm(TotalMajor ~ PlateName + log1p(focal_depth), 
-                   family = poisson("log"), data = eq_agg_df_nap)
+nap_p_model <- glm(TotalMajor ~ PlateName,  family = poisson("log"), 
+                   data = eq_agg_df_nap)
 
 summary(nap_p_model)
 
-exp(coef(nap_p_model))
+exp(coef(nap_p_model)) #counts of earthquakes
 
 
