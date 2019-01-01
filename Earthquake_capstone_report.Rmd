@@ -13,24 +13,44 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Table of Contents
+
+
 Problem
+
 Methods
+
 - Data Sources
+
 - Signif_earthquakes clean-up
+
 - USGS_df clean-up
+
 - Joining the data frames
+
 - Adding plate information
+
 - Exploratory Data Analysis
+
 - Geographic plots (Maps)
+
 - Creation of NAP data set
+
 - Checking for skew of variables
+
 - Interactions between variables
+
 Predictive Models
+
 - Linear Regression
+
 - Logistic Regression
+
 - Binomial Distribution
+
 - Poisson Model
+
 Conclusion
+
 
 
 #The Problem
@@ -235,8 +255,8 @@ earthquakes <- filter(earthquakes, year < 2017)
 earthquakes <- filter(earthquakes, magnitude > 5.5)
 ```
 
-```{r, echo = FALSE}
-head(earthquakes)
+```{r, echo=FALSE}
+knitr::kable(head(earthquakes))
 ```
 
 
@@ -254,9 +274,12 @@ more significant earthquakes than any other year in recorded seismic history.
 #Bar graph of year vs # of major earthquakes (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, face = "bold"), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes per Year")
+  ggtitle("Number of Major Earthquakes per Year") +
+  labs(x = "Year", y = "Number of Major Earthquakes")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 ```
 
 To get more detail on the magnitude of earthquakes that occurred by year, a 
@@ -271,7 +294,10 @@ ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs. Magnitude")
+  ggtitle("Year vs. Magnitude") +
+  labs(x = "Year", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 ```
 
 
@@ -290,7 +316,10 @@ ggplot(earthquakes, aes(x = PlateName, y = magnitude)) +
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Outliers in magnitude on tectonic plates")
+  ggtitle("Outliers in magnitude on tectonic plates")+
+  labs(x = "Tectonic Plate", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 ```
 
 
@@ -312,7 +341,8 @@ plate_map <- world +
   geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1)+
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Plate Name') +
-  theme(legend.position = "right")
+  theme(legend.position = "bottom")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
 
 
@@ -397,7 +427,10 @@ ggplot(nap_earthquakes, aes(factor(year))) +
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes/Year on N. American & Pacific plates")
+  ggtitle("Number of Major Earthquakes/Year on N. American & Pacific plates")+
+  labs(x = "Year", y = "Number of Major Earthquakes")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 ```
 
 ```{r, echo = FALSE}
@@ -406,7 +439,10 @@ ggplot(nap_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on N. american and Pacific plates")
+  ggtitle("Year vs Magnitude of earthquakes on N. american and Pacific plates")+
+  labs(x = "Year", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 ```
 
 ```{r, echo=FALSE, include=FALSE}
@@ -651,11 +687,7 @@ clear that a logistic regression does not accurately predict magnitude for
 earthquakes. However, from the Wald Type II Chi-sq test, we find longitude to be 
 highly significant in determining whether an earthquakes will 
 have a magnitude of 7.0 or above. The tests also reveal focal depth and plate 
-name to be fairly significant predictors. These results again make sense as the
-plate location of a quake would determine the magnitude of the tremor; for
-example,a quake that occurs on the Pacific plate is more likely to be a major 
-quake than a tremor on the eurasian plate as the Pacific plate is prone to 
-sudden, sharp movements found only in subduction zones.
+name to be fairly significant predictors.
 
 This process was then repeated by restricting the plates to the NAP plate data.
 
@@ -766,63 +798,49 @@ summary(bd_model)
 ```{r, echo=FALSE}
 #measuring relative & absolute effects of binomial distributions
 
-exp(coef(bd_model))  #relative effects
+knitr::kable(exp(coef(bd_model)))  #relative effects
 
 plogis(-3.773)
-plogis(-3.773 + coef(bd_model)) #absolute effects
+knitr::kable(plogis(-3.773 + coef(bd_model))) #absolute effects
 ```
 
-```{r, echo=FALSE, include=FALSE}
-#binomial distribution for nap_earthquakes
-eq_agg_df_nap <- nap_earthquakes %>% group_by(PlateName) %>% 
-  summarize(TotalMajor = sum(MajorEarthquakes), TotalEarthquakes = n())
 
-nap_model <- glm(cbind(TotalMajor, TotalEarthquakes - TotalMajor) ~ PlateName, 
-    family = binomial("logit"), data = eq_agg_df_nap)
+In the binomial regression, both relative and absolute effects were tested to
+give probabilities for each plate. In the relative effect, values represent how 
+adding plate information increases the odds of a major earthquake.
 
-summary(nap_model)
-```
-
-```{r, echo=FALSE}
-#measuring relative & absolute effects of binomial distributions for nap data
-
-exp(coef(nap_model))  #relative effects
-
-plogis(-2.82138)
-plogis(-2.82138 + coef(nap_model)) #absolute effects
-```
-
-From the binomial regression of all earthquakes, it is clear to see that this 
-model is successful in predicting probability of a major quake depending on the 
-plate. Plates that have subduction boundaries have coefficients closest to
-zero while plates with little movement or smaller, transverse boundaries have 
-large coefficients, indicating their lower likelihood of experiencing a major
-tremor. Additionally, we find that the relative and absolute effects of each 
-plate in this distribution are minimal, with the majority of values very close 
-to zero. 
-
+In the absolute effect, the probabilities of a plate being affected by a major 
+earthquakes were calculated. From this calculation, it is obvious which plates
+have the highest probability of experiencing a major tremor. 
 
 ###Poisson Models
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, include=FALSE}
 
 #Poisson distribution for earthquakes1
 
 p_model <- glm(TotalMajor ~ PlateName, family=poisson("log"), data=eq_agg_df)
 
 summary(p_model)
+```
 
-exp(coef(p_model))
+```{r, echo=FALSE}
+knitr::kable(exp(coef(p_model)))
+```
 
-
+From the Poisson model, it becomes clear which plates are likely to have the 
+highest number of earthquakes: the Pacific plate is projected to have 42 major
+earthquakes while the South American plate comes in with a close 38.5 projected
+major quakes. The Sunda plate, under southeast Asia and western Indonesia is 
+also predicted to experience a large volume of significant tremors, with a 
+predicted 31.5 earthquakes. 
+```{r, echo=FALSE, include=FALSE}
 #Poisson distribution for nap_earthquakes
 
 nap_p_model <- glm(TotalMajor ~ PlateName, family = poisson("log"), 
                  data = eq_agg_df_nap)
 
 summary(nap_p_model)
-
-exp(coef(nap_p_model))
 ```
 
 
@@ -858,7 +876,6 @@ zones cause the largest quakes; however, the amount of time that earthquakes
 have been able to be accurately measured is small when compared to the geologic
 timeline and it is possible that a strike-slip fault may also trigger 
 less-frequent major quakes. The last addition would be a mixed effects model
-where the data would be analyzed to attempt to establish any possible patterns
-that may exist between subgroups of data (such as plate location). 
+to maximize the data. 
 
 #References
