@@ -156,7 +156,7 @@ ggplot(earthquakes, aes(factor(year))) +
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes per Year")
+  ggtitle("Major Earthquakes vs. Year")
 
 
 #Boxplot of Plate name vs magnitude
@@ -164,7 +164,7 @@ ggplot(earthquakes, aes(x = PlateName, y = magnitude)) +
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Outliers in magnitude on tectonic plates")
+  ggtitle("Magnitude vs. Plate Name")
 
 
 #Boxplot of Year vs. Magnitude
@@ -172,7 +172,7 @@ ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs. Magnitude")
+  ggtitle("Magnitude vs. Year")
 
 
 #Map Earthquake locations by magnitude (colored per tectonic plate location)
@@ -233,7 +233,7 @@ ggplot(pacific_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on Pacific plate")
+  ggtitle("Magnitude vs Year on Pacific plate")
 
 #Unite month, day, year columns
 pacific_earthquakes <- unite(pacific_earthquakes, quake_date, 
@@ -289,7 +289,7 @@ ggplot(na_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on North American plate")
+  ggtitle("Magnitude vs Year on North American plate")
 
 #Unite month, day, year columns
 na_earthquakes <- unite(na_earthquakes, quake_date, c("year", "month", "day"), 
@@ -345,7 +345,7 @@ ggplot(sa_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on South American and Nazca plates")
+  ggtitle("Magnitude vs Year on South American and Nazca plates")
 
 #Unite month, day, year columns
 sa_earthquakes <- unite(sa_earthquakes, quake_date, c("year", "month", "day"), 
@@ -403,7 +403,7 @@ ggplot(eua_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on Eurasian plate")
+  ggtitle("Magnitude vs Year of earthquakes on Eurasian plate")
 
 #Unite month, day, year columns
 eua_earthquakes <- unite(eua_earthquakes, quake_date, c("year", "month", "day"),
@@ -462,7 +462,7 @@ ggplot(nap_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude on North American and Pacific plates")
+  ggtitle("Magnitude vs Year on North American and Pacific plates")
 
 #Unite month, day, year columns
 nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"),
