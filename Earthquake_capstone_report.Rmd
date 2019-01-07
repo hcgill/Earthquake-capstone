@@ -271,12 +271,12 @@ more significant earthquakes than any other year in recorded seismic history.
 
 ```{r, echo=FALSE}
 
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, face = "bold"), 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes per Year") +
+  ggtitle("Major Earthquakes vs. Year") +
   labs(x = "Year", y = "Number of Major Earthquakes")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -289,12 +289,12 @@ although there were more earthquakes in 2011, the majority of the earthquakes
 were within the 5.5 to 6.5 magnitude range. 
 
 ```{r, echo = FALSE}
-#Boxplot of Year vs. Magnitude
+#Boxplot of Magnitude vs. Year
 ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs. Magnitude") +
+  ggtitle("Magnitude vs. Year") +
   labs(x = "Year", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -311,12 +311,12 @@ built until one plate slips under the other, creating a large seismic event.
 
 ```{r, echo = FALSE}
 
-#Boxplot of Plate name vs magnitude
+#Boxplot of magnitude vs. plate name
 ggplot(earthquakes, aes(x = PlateName, y = magnitude)) + 
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Outliers in magnitude on tectonic plates")+
+  ggtitle("Magnitude vs. Plate Name")+
   labs(x = "Tectonic Plate", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -422,7 +422,7 @@ nap_earthquakes <- filter(earthquakes, PlateName == c("North America",
 ```
 
 ```{r, echo = FALSE}
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(nap_earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
@@ -434,12 +434,12 @@ ggplot(nap_earthquakes, aes(factor(year))) +
 ```
 
 ```{r, echo = FALSE}
-#Boxplot of year vs magnitude on North American and Pacific plates
+#Boxplot of magnitude vs year on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on N. american and Pacific plates")+
+  ggtitle("Magnitude vs Year of earthquakes on N. american and Pacific plates")+
   labs(x = "Year", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -524,29 +524,40 @@ be an interaction between longitude and focal depth.
 ##Interactions between variables
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
-
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 ```
