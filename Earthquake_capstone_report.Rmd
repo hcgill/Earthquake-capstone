@@ -589,13 +589,11 @@ regressions, and the Poisson model.
 
 As was discovered earlier, there are multiple variables that can impact an 
 earthquake's magnitude. Due to this, multiple linear regression was used to 
-attempt to find if there is a linear relationship between the variables. 
-However, after completing the linear regressions, it was determined this model
-is not successful in predicting the probability of earthquakes as it does not
-follow a normal distribution, the coefficients vary substantially in value, and 
-the variables produce a t-value that is close to zero, indicating that there is 
-not a linear relationship between variables. 
-
+attempt to find if there is a linear relationship between the variables and if
+that relationship could be used to predict the magnitude of a quake. However, 
+after completing the linear regressions,it was determined that this model was 
+not successful in predicting magnitude of a quake as the likelihood 
+and errors given by the models are not normally distributed. 
 
 ```{r, echo = FALSE, include = FALSE}
 
