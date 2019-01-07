@@ -341,7 +341,7 @@ plate_map <- world +
   geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1)+
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Plate Name') +
-  theme(legend.position = "bottom")+
+  theme(legend.position = "right")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
 
@@ -517,8 +517,22 @@ median(earthquakes1$magnitude)
 
 After checking for skew, interactions between variables were analyzed across the 
 entire data set, earthquakes, and across the restricted North American/Pacific
-Plate earthquakes (nap_earthquakes). From the pairs analysis, there appears to
-be an interaction between longitude and focal depth.
+Plate earthquakes (nap_earthquakes). In the pairs analysis, the red circles
+represent any earthquake with a magnitude of 7.0 or higher. 
+
+For the full earthquakes data set, the first pairs chart did not reveal a 
+discernible relationship between latitude, plate name, and focal depth. However,
+from the second and third pairs plots, there does appear to be a relationship 
+between plate name and longitude, as well as plate name and focal depth. 
+Additionally, there appears to be a relationship between magnitude and 
+focal_depth, with the strongest quakes occurring within a narrow depth range. 
+
+In the pairs plot for the North America/Paccific data set, the majority of 
+quakes are clustered around specific latitudes and longitudes. These plots 
+reveal that the majority of quakes occur along the edge of the plate, with 
+few significant quakes towards the center of the plate. This plot also shows
+that the majority of earthquakes with a magnitude of 7.0 or above occur within
+a fairly narrow focal depth range. 
 
 ```{r, echo = FALSE}
 ##Interactions between variables
