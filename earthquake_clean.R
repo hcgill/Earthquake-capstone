@@ -520,64 +520,95 @@ median(earthquakes1$magnitude)
 
 # Interactions between variables ------------------------------------------
 
-
-pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
-
-
-pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
+
+
+pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes,
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 
@@ -649,6 +680,8 @@ QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) +
                    PlateName, data = earthquakes1, family = binomial)
 summary(QuakeLog1)
 knitr::kable(car::Anova(QuakeLog1))
+
+#Pairwise function returns error due to size
 summary(glht(QuakeLog1, linfct = mcp(PlateName = "Tukey", 
                                      covariate_average = TRUE, 
                                      interaction_average = TRUE)))
@@ -658,6 +691,8 @@ QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth),
                  data = earthquakes1, family = binomial)
 summary(QuakeLog2)
 knitr::kable(car::Anova(QuakeLog2))
+
+#Pairwise function returns error due to size
 summary(glht(QuakeLog2, linfct = mcp(longitude = "Tukey", 
                                      covariate_average = TRUE)))
 
