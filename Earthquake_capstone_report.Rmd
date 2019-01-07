@@ -76,14 +76,14 @@ then used to predict the probability of an earthquake occurring on each plate.
 
 ###Data Sources
 Three data sets were used in this analysis. The first data set, 
-signif_earthquakes, was obtained from NOAA's Significant Earthquakes Database 
+signif_earthquakes, was obtained from [NOAA's Significant Earthquakes Database] 
 (https://www.ngdc.noaa.gov/nndc/struts/form?t=101650&s=1&d=1) and lists every 
 recorded earthquake in history back to 2150 BC. The other data set used, 
-USGS_df, was obtained from Kaggle 
+USGS_df, was obtained from [Kaggle] 
 (https://www.kaggle.com/usgs/earthquake-database#database.csv) and lists all 
 recorded major earthquakes in the USGS data base from 1965 to 2016. 
 Additionally, a map of tectonic plate points was used to assign the latitude and
-longitude points to a tectonic plate 
+longitude points to a tectonic plate [map of plates]
 (https://github.com/fraxen/tectonicplates/tree/master/GeoJSON).
 
 

@@ -156,7 +156,7 @@ ggplot(earthquakes, aes(factor(year))) +
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes per Year")
+  ggtitle("Major Earthquakes vs. Year")
 
 
 #Boxplot of Plate name vs magnitude
@@ -164,7 +164,7 @@ ggplot(earthquakes, aes(x = PlateName, y = magnitude)) +
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Outliers in magnitude on tectonic plates")
+  ggtitle("Magnitude vs. Plate Name")
 
 
 #Boxplot of Year vs. Magnitude
@@ -172,7 +172,7 @@ ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs. Magnitude")
+  ggtitle("Magnitude vs. Year")
 
 
 #Map Earthquake locations by magnitude (colored per tectonic plate location)
@@ -233,7 +233,7 @@ ggplot(pacific_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on Pacific plate")
+  ggtitle("Magnitude vs Year on Pacific plate")
 
 #Unite month, day, year columns
 pacific_earthquakes <- unite(pacific_earthquakes, quake_date, 
@@ -289,7 +289,7 @@ ggplot(na_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on North American plate")
+  ggtitle("Magnitude vs Year on North American plate")
 
 #Unite month, day, year columns
 na_earthquakes <- unite(na_earthquakes, quake_date, c("year", "month", "day"), 
@@ -345,7 +345,7 @@ ggplot(sa_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on South American and Nazca plates")
+  ggtitle("Magnitude vs Year on South American and Nazca plates")
 
 #Unite month, day, year columns
 sa_earthquakes <- unite(sa_earthquakes, quake_date, c("year", "month", "day"), 
@@ -403,7 +403,7 @@ ggplot(eua_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on Eurasian plate")
+  ggtitle("Magnitude vs Year of earthquakes on Eurasian plate")
 
 #Unite month, day, year columns
 eua_earthquakes <- unite(eua_earthquakes, quake_date, c("year", "month", "day"),
@@ -462,7 +462,7 @@ ggplot(nap_earthquakes, aes(x = year, y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude on North American and Pacific plates")
+  ggtitle("Magnitude vs Year on North American and Pacific plates")
 
 #Unite month, day, year columns
 nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"),
@@ -520,64 +520,95 @@ median(earthquakes1$magnitude)
 
 # Interactions between variables ------------------------------------------
 
-
-pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
-
-
-pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude + PlateName * log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
+
+
+pairs(longitude ~ PlateName * log1p(focal_depth), data = earthquakes,
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName * log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude + PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude * longitude * PlateName * log1p(focal_depth), 
-     data = nap_earthquakes)
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 
@@ -649,6 +680,8 @@ QuakeLog1 <- glm(MajorEarthquakes ~ latitude + longitude + log1p(focal_depth) +
                    PlateName, data = earthquakes1, family = binomial)
 summary(QuakeLog1)
 knitr::kable(car::Anova(QuakeLog1))
+
+#Pairwise function returns error due to size
 summary(glht(QuakeLog1, linfct = mcp(PlateName = "Tukey", 
                                      covariate_average = TRUE, 
                                      interaction_average = TRUE)))
@@ -658,6 +691,8 @@ QuakeLog2 <- glm(MajorEarthquakes ~ longitude * log1p(focal_depth),
                  data = earthquakes1, family = binomial)
 summary(QuakeLog2)
 knitr::kable(car::Anova(QuakeLog2))
+
+#Pairwise function returns error due to size
 summary(glht(QuakeLog2, linfct = mcp(longitude = "Tukey", 
                                      covariate_average = TRUE)))
 
