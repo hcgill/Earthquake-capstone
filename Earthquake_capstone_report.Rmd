@@ -882,10 +882,15 @@ Out of the four types of models created, the most successful models were the
 Binomial disribution and the Poisson model. The binomial distribution was able 
 to predict the probability of a major quake occurring on a given plate while the 
 Poisson model predicted the number of tremors with a magnitude of 7.0 or 
-greater, depending on the tectonic plate location. However, even with 
-this probability, there is significant room to improve the possibility of 
-earthquake prediction, as the Poisson model does not indicate where the quake 
-may occur. 
+greater, depending on the tectonic plate location. From the binomial regression, 
+the Solomon Sea plate was found to have the highest probability of experiencing 
+a major earthquake. The plates around the Solomon sea plate, such as the New
+Hebrides plate and the Molucca Sea plate are also found to have high 
+probabilities of a major quake. From the Poisson model, it was predecited that 
+the Pacific plate would have the highest number of major earthquakes (42). 
+However, even with this probability, there is significant room to improve the 
+possibility of earthquake prediction, as the Binomial regression and Poisson 
+models do not indicate where the quake may occur. 
 
 For future analysis, I would propose a few additions. The first modification to
 this analysis would be to analyze the data using a time series model as this 
@@ -900,7 +905,9 @@ zones cause the largest quakes; however, the amount of time that earthquakes
 have been able to be accurately measured is small when compared to the geologic
 timeline and it is possible that a strike-slip fault may also trigger 
 less-frequent major quakes. The last addition would be a mixed effects model
-to maximize the data. 
+to maximize the data by better accounting for variances in plate measurements, 
+geological activy, and geological formations not captured directly in the
+measurement values. 
 
 #References
 
