@@ -271,12 +271,12 @@ more significant earthquakes than any other year in recorded seismic history.
 
 ```{r, echo=FALSE}
 
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
-  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, face = "bold"), 
+  theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Number of Major Earthquakes per Year") +
+  ggtitle("Major Earthquakes vs. Year") +
   labs(x = "Year", y = "Number of Major Earthquakes")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -289,12 +289,12 @@ although there were more earthquakes in 2011, the majority of the earthquakes
 were within the 5.5 to 6.5 magnitude range. 
 
 ```{r, echo = FALSE}
-#Boxplot of Year vs. Magnitude
+#Boxplot of Magnitude vs. Year
 ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Year vs. Magnitude") +
+  ggtitle("Magnitude vs. Year") +
   labs(x = "Year", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -311,12 +311,12 @@ built until one plate slips under the other, creating a large seismic event.
 
 ```{r, echo = FALSE}
 
-#Boxplot of Plate name vs magnitude
+#Boxplot of magnitude vs. plate name
 ggplot(earthquakes, aes(x = PlateName, y = magnitude)) + 
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Outliers in magnitude on tectonic plates")+
+  ggtitle("Magnitude vs. Plate Name")+
   labs(x = "Tectonic Plate", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -341,7 +341,7 @@ plate_map <- world +
   geom_point(data = plates, aes(x = long, y = lat), fill = 'black', stroke = 1)+
   scale_size_continuous(range = c(1, 8), breaks = c(6, 7, 8, 9)) +
   labs(size = 'magnitude', color = 'Plate Name') +
-  theme(legend.position = "bottom")+
+  theme(legend.position = "right")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5))
 ```
 
@@ -422,7 +422,7 @@ nap_earthquakes <- filter(earthquakes, PlateName == c("North America",
 ```
 
 ```{r, echo = FALSE}
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(nap_earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
@@ -434,12 +434,12 @@ ggplot(nap_earthquakes, aes(factor(year))) +
 ```
 
 ```{r, echo = FALSE}
-#Boxplot of year vs magnitude on North American and Pacific plates
+#Boxplot of magnitude vs year on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) +
-  ggtitle("Year vs Magnitude of earthquakes on N. american and Pacific plates")+
+  ggtitle("Magnitude vs Year of earthquakes on N. american and Pacific plates")+
   labs(x = "Year", y = "Magnitude")+
   theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
   theme(axis.title = element_text(face = "bold"))
@@ -517,36 +517,61 @@ median(earthquakes1$magnitude)
 
 After checking for skew, interactions between variables were analyzed across the 
 entire data set, earthquakes, and across the restricted North American/Pacific
-Plate earthquakes (nap_earthquakes). From the pairs analysis, there appears to
-be an interaction between longitude and focal depth.
+Plate earthquakes (nap_earthquakes). In the pairs analysis, the red circles
+represent any earthquake with a magnitude of 7.0 or higher. 
+
+For the full earthquakes data set, the first pairs chart did not reveal a 
+discernible relationship between latitude, plate name, and focal depth. However,
+from the second and third pairs plots, there does appear to be a relationship 
+between plate name and longitude, as well as plate name and focal depth. 
+Additionally, there appears to be a relationship between magnitude and 
+focal_depth, with the strongest quakes occurring within a narrow depth range. 
+
+In the pairs plot for the North America/Paccific data set, the majority of 
+quakes are clustered around specific latitudes and longitudes. These plots 
+reveal that the majority of quakes occur along the edge of the plate, with 
+few significant quakes towards the center of the plate. This plot also shows
+that the majority of earthquakes with a magnitude of 7.0 or above occur within
+a fairly narrow focal depth range. 
 
 ```{r, echo = FALSE}
 ##Interactions between variables
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = earthquakes)
+     data = earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 
 #Interactions between variables on North_American and Pacific plates
 
 
-pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(latitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
-pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes)
+pairs(longitude ~ PlateName + log1p(focal_depth), data = nap_earthquakes, 
+      col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+      pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 pairs(magnitude ~ latitude + longitude + PlateName + log1p(focal_depth), 
-     data = nap_earthquakes)
-
+     data = nap_earthquakes, 
+     col=ifelse(earthquakes$magnitude >= 7.0, "red", "black"), 
+     pch=ifelse(earthquakes$magnitude >= 7.0, 16, 17))
 
 
 ```
@@ -564,13 +589,11 @@ regressions, and the Poisson model.
 
 As was discovered earlier, there are multiple variables that can impact an 
 earthquake's magnitude. Due to this, multiple linear regression was used to 
-attempt to find if there is a linear relationship between the variables. 
-However, after completing the linear regressions, it was determined this model
-is not successful in predicting the probability of earthquakes as it does not
-follow a normal distribution, the coefficients vary substantially in value, and 
-the variables produce a t-value that is close to zero, indicating that there is 
-not a linear relationship between variables. 
-
+attempt to find if there is a linear relationship between the variables and if
+that relationship could be used to predict the magnitude of a quake. However, 
+after completing the linear regressions,it was determined that this model was 
+not successful in predicting magnitude of a quake as the likelihood 
+and errors given by the models are not normally distributed. 
 
 ```{r, echo = FALSE, include = FALSE}
 
@@ -683,11 +706,10 @@ knitr::kable(car::Anova(QuakeLog4))
 ```
  
 Reviewing the models for logistic regression for all earthquakes, it becomes 
-clear that a logistic regression does not accurately predict magnitude for 
-earthquakes. However, from the Wald Type II Chi-sq test, we find longitude to be 
-highly significant in determining whether an earthquakes will 
-have a magnitude of 7.0 or above. The tests also reveal focal depth and plate 
-name to be fairly significant predictors.
+clear from the Wald Type II Chi-sq test that longitude is highly significant in 
+determining whether an earthquakes will have a magnitude of 7.0 or above. The 
+tests also reveal focal depth and plate name to be fairly significant 
+predictors.
 
 This process was then repeated by restricting the plates to the NAP plate data.
 
@@ -769,15 +791,15 @@ tapply(predictTrain, nap_earthquakes$MajorEarthquakes, mean)
 ```
 
 Looking at the results of the logistic regression for the North American and 
-Pacific plates, it is clear that a logistic regression model better fits this
-restricted data set rather than the entire earthquakes set. The deviances are 
-1/10 of the values found in the larger set: deviances hover around 600 as do AIC
-values, indicating that this is a better fit than when the model is applied to 
-all earthquake data. 
+Pacific plates, the results are similar. The deviances are approximately 1/10 of 
+the values found in the larger set: deviances hover around 600 as do AIC
+values. This makes sense as the data for the Pacific plate is roughly 1/10 of 
+the total data from the earthquakes data set. 
 
 Interestingly, when the Wald type II test is run across each of the NAP models,
 focal depth of the earthquake becomes the most significant predictor of when an 
-earthquake's magnitude will exceed 7.0 on the Richter scale.
+earthquake's magnitude will exceed 7.0 on the Richter scale, as compared to 
+longitude in the full data set. 
 
 
 
@@ -804,14 +826,26 @@ plogis(-3.773)
 knitr::kable(plogis(-3.773 + coef(bd_model))) #absolute effects
 ```
 
+Given the sample size, binomial regression was also used to predict the 
+probability of a significant earthquake. This type of model was selected because
+each plate has a different number of total earthquakes and major earthquakes; a
+binomial regression preserves thesesample sizes and the variability.  In the 
+binomial regression, both relative and absolute effects were tested to give 
+probabilities for each plate.
 
-In the binomial regression, both relative and absolute effects were tested to
-give probabilities for each plate. In the relative effect, values represent how 
-adding plate information increases the odds of a major earthquake.
+In the relative effect, values represent how adding plate information increases 
+the odds of a major earthquake. From the relative effect model, we can see the 
+Scotia plate, the South American plate, the North Bismark plate, the Pacific 
+plate, the North Andes plate, and the New Hebrides plate all significantly 
+increase the odds of a major earthquake. 
 
 In the absolute effect, the probabilities of a plate being affected by a major 
 earthquakes were calculated. From this calculation, it is obvious which plates
-have the highest probability of experiencing a major tremor. 
+have the highest probability of experiencing a major tremor: the Amur plate, the
+Molucca Sea plate, the Maoke plate, the India plate, the North Andes plate, the
+Juan Fernandez plate, the Scotia plate, the Panama Plate, and the Solomon Sea 
+plate all have probabilities higher than 6.5%. Of these, the Solomon Sea plate
+has the highest probability of experiencing a major earthquake at 8.19%. 
 
 ###Poisson Models
 
@@ -848,10 +882,15 @@ Out of the four types of models created, the most successful models were the
 Binomial disribution and the Poisson model. The binomial distribution was able 
 to predict the probability of a major quake occurring on a given plate while the 
 Poisson model predicted the number of tremors with a magnitude of 7.0 or 
-greater, depending on the tectonic plate location. However, even with 
-this probability, there is significant room to improve the possibility of 
-earthquake prediction, as the Poisson model does not indicate where the quake 
-may occur. 
+greater, depending on the tectonic plate location. From the binomial regression, 
+the Solomon Sea plate was found to have the highest probability of experiencing 
+a major earthquake. The plates around the Solomon sea plate, such as the New
+Hebrides plate and the Molucca Sea plate are also found to have high 
+probabilities of a major quake. From the Poisson model, it was predecited that 
+the Pacific plate would have the highest number of major earthquakes (42). 
+However, even with this probability, there is significant room to improve the 
+possibility of earthquake prediction, as the Binomial regression and Poisson 
+models do not indicate where the quake may occur. 
 
 For future analysis, I would propose a few additions. The first modification to
 this analysis would be to analyze the data using a time series model as this 
@@ -866,7 +905,9 @@ zones cause the largest quakes; however, the amount of time that earthquakes
 have been able to be accurately measured is small when compared to the geologic
 timeline and it is possible that a strike-slip fault may also trigger 
 less-frequent major quakes. The last addition would be a mixed effects model
-to maximize the data. 
+to maximize the data by better accounting for variances in plate measurements, 
+geological activy, and geological formations not captured directly in the
+measurement values. 
 
 #References
 
