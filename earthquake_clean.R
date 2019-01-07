@@ -151,28 +151,37 @@ earthquakes <- filter(earthquakes, magnitude > 5.5)
 # Graph Exploration and Analysis of Data ----------------------------------
 
 
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) + 
-  ggtitle("Major Earthquakes vs. Year")
+  ggtitle("Major Earthquakes vs. Year") +
+  labs(x = "Year", y = "Number of Major Earthquakes")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 
 
-#Boxplot of Plate name vs magnitude
+#Boxplot of magnitude vs. plate name
 ggplot(earthquakes, aes(x = PlateName, y = magnitude)) + 
   geom_boxplot() + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Magnitude vs. Plate Name")
+  ggtitle("Magnitude vs. Plate Name")+
+  labs(x = "Tectonic Plate", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 
 
-#Boxplot of Year vs. Magnitude
+#Boxplot of Magnitude vs. year
 ggplot(earthquakes, aes(x = factor(year), y = magnitude)) +
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Magnitude vs. Year")
+  ggtitle("Magnitude vs. Year")+
+  labs(x = "Year", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 
 
 #Map Earthquake locations by magnitude (colored per tectonic plate location)
@@ -450,19 +459,25 @@ gganimate::gg_animate(eua_animated_map)
 nap_earthquakes <- filter(earthquakes, 
                           PlateName == c("North America", "Pacific"))
 
-#Bar graph of year vs # of major earthquakes (1965-2016)
+#Bar graph of # of major earthquakes vs. year (1965-2016)
 ggplot(nap_earthquakes, aes(factor(year))) + 
   geom_bar(stat = "count", fill = "dark red") + 
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
         text=element_text(size=9)) + 
-  ggtitle("# of Major Earthquakes per Year on N. American & Pacific plates")
+  ggtitle("# of Major Earthquakes per Year on N. American & Pacific plates") +
+  labs(x = "Year", y = "Number of Major Earthquakes")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 
-#Boxplot of year vs magnitude on North American and Pacific plates
+#Boxplot of Magnitude vs Year on North American and Pacific plates
 ggplot(nap_earthquakes, aes(x = year, y = magnitude)) + 
   geom_boxplot() +
   theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5), 
         text=element_text(size=9)) +
-  ggtitle("Magnitude vs Year on North American and Pacific plates")
+  ggtitle("Magnitude vs Year on North American and Pacific plates") +
+  labs(x = "Year", y = "Magnitude")+
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) + 
+  theme(axis.title = element_text(face = "bold"))
 
 #Unite month, day, year columns
 nap_earthquakes <- unite(nap_earthquakes, quake_date, c("year", "month", "day"),
